@@ -1,0 +1,15 @@
+Package: waterGLKN
+Type: Package
+Title: Package for importing, querying, summarizing and visualizing GLKN water data
+Version: 0.1.0
+Authors@R: c(person("Kate", "Miller", role = c("aut", "cre"), email = "kathryn_miller@nps.gov",
+    comment = c(ORCID = "0000-0001-8823-6373")),
+             person('Rick', 'Damstra', role = 'aut'))
+Description: This package contains functions that import the GLKN water data package 
+    downloaded from IRMA.NPS.GOV to perform routine queries, data summaries and  
+    visualizations. 
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/KateMMiller/waterGLKN
+BugReports: https://github.com/KateMMiller/waterGLKN/issues
