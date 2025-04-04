@@ -2,7 +2,7 @@
 #'
 #' @description This function imports views in GLKN water data packages. The easiest way to work with the data package is to
 #' download the published data package from NPS DataStore manually (irma.nps.gov/datastore), or use csvs that match the format
-#' of published data packages. The latter being for importing data to be published for tasks like QCing the data. The other option
+#' of published data packages. The latter option being for importing pre-certified for tasks like performing QC checks. The other option
 #' is to download a published data package using the NPSutils package. However, the NPSutils package has a lot of dependencies,
 #' including the terra package, which typically fails to install from CRAN. Once NPSutils is installed, the process is less cumbersome.
 #'
@@ -12,8 +12,6 @@
 #'
 #' @param type Select how to import the data package.
 #' \describe{
-#' \item{"irma"}{Downloads the data package from the NPS DataStore based on the record number and saves it to the working directory.
-#' Note that NPSutils package is a dependency that is cumbersome to install.}
 #' \item{"csv"}{Imports the csv version of the data package views from your local machine. If selected, must provide the
 #' filepath for the csvs in the filepath argument.}
 #' \item{"zip"}{Imports the csv version of the data package views from your local machine as a zipped file. If selected, must provide the
@@ -33,37 +31,40 @@
 #' @examples
 #' \dontrun{
 #'
-#' # ADD EXAMPLES
+#' # Download lakes and rivers data package from DataStore
+#' devtools::install_github("nationalparkservice/NPSutils") # might take a few tries to install
+#' NPSutils::get_data_packages(c("2306516", "2309369"))
+#'
+#' path_lake = "../data/GLKN_water/2306516"
+#' importData(filepath = path_lake, protocol = "lakes")
+#'
+#' path_river = "../data/GLKN_water/2309369"
+#' importData(filepath = path_river, protocol = "rivers")
+#'
+#' river_zip = ("../data/GLKN_water/records-2306516.zip")
+#' importData(type = 'zip', filepath = river_zip, protocol = 'rivers')
 #'
 #' }
 #'
 #' @return Assigns water csvs to specified environment
 #' @export
 
-importData <- function(type = c("zip"), filepath = NA, protocol = "rivers", new_env = TRUE){
+importData <- function(type = c("csv"), filepath = NA, protocol = "rivers", new_env = TRUE){
 
   #-- Error handling --
-  type <- match.arg(type, c("zip", "csv", "irma"))
+  type <- match.arg(type, c("zip", "csv"))
   protocol <- match.arg(protocol, c("lakes", "rivers"))
   stopifnot(class(new_env) == 'logical')
 
-  # check for required packages for certain arguments
-  if(!requireNamespace("NPSutils", quietly = TRUE) & type %in% c('irma')){
-    stop("Package 'NPSutils' needed for type = 'irma'. Please install it via devtools::install_github('nationalparkservice/NPSutils').",
-         call. = FALSE)
-  }
-
   # check that filepath was specified for non-DSN options
-  if(type %in% c("csv", "zip")){
-    if(is.na(filepath)){stop(paste0("Must specify a filepath to the database when type = '",
-                                    type, "' option."))}
-    if(!grepl("/$", filepath)){filepath <- paste0(filepath, "/")}
+  if(is.na(filepath)){stop(paste0("Must specify a filepath to the database when type = '",
+                                  type, "' option."))}
+  if(!grepl("/$", filepath)){filepath <- paste0(filepath, "/")}
 
-    if(!file.exists(filepath)){
-      stop(paste0("Specified file path does not exist. ",
-                  ifelse(grepl("sharepoint", filepath), " Note that file paths from Sharepoint or Teams are not accessible.",
-                         "")))}
-  }
+  if(!file.exists(filepath)){
+    stop(paste0("Specified file path does not exist. ",
+                ifelse(grepl("sharepoint", filepath), " Note that file paths from Sharepoint or Teams are not accessible.",
+                       "")))}
 
   # Check if type = 'csv' was specified, but .zip file is filepath
   if(type == 'csv' & grepl(".zip", filepath)){stop("Specified a zip file in filepath. Must use type = 'zip' instead of 'csv'.")}
@@ -83,11 +84,10 @@ importData <- function(type = c("zip"), filepath = NA, protocol = "rivers", new_
     } else if(protocl == "lakes"){GLKN_lakes
     } else {.GlobalEnv}
   }
+  }
 
   # Vector of file names in filepath that end in .csv (ie the data package views)
   wq_views <- c("Characteristics", "HUC", "Locations", "Projects", "Results")
-
-  #++++ ENDED HERE +++++
 
   #-- Import from csvs --
   if(type == "csv"){
@@ -105,7 +105,7 @@ importData <- function(type = c("zip"), filepath = NA, protocol = "rivers", new_
     if(length(miss_vws) > 0){stop("Missing the following views from the specified filepath: ",
                                   paste0(miss_vws, collapse = ", "))}
 
-    if(length(dp_list) > 11){
+    if(length(dp_list) > length(wq_views)){
       stop(
         "More than one file matching the data package names were detected in the specified filepath
     (e.g. 'Chemistry_Data'). Must specify a filepath that only contains 1 version of each view.")
@@ -135,8 +135,6 @@ importData <- function(type = c("zip"), filepath = NA, protocol = "rivers", new_
     # environment as separate, named objects.
     list2env(dp_files, envir = env)
 
-
-
     # Close progress bar
     close(pb)
   }
@@ -161,7 +159,7 @@ importData <- function(type = c("zip"), filepath = NA, protocol = "rivers", new_
     if(length(miss_vws) > 0){stop("Missing the following views from the specified filepath: ",
                                   paste0(miss_vws, collapse = ", "))}
 
-    if(length(z_list) > 11){
+    if(length(z_list) > length(wq_views)){
       stop(
         "More than one file matching the data package names were detected in the specified filepath
     (e.g. 'Chemistry_Data'). Must specify a filepath that only contains 1 version of each view.")
@@ -186,13 +184,8 @@ importData <- function(type = c("zip"), filepath = NA, protocol = "rivers", new_
     close(pb)
   }
 
-  # Catch change in Water Level field
-  if(any(names(VIEWS_WQ$WaterLevel_Data) %in% "TU.TD")){
-    names(VIEWS_WQ$WaterLevel_Data)[names(VIEWS_WQ$WaterLevel_Data) == "TU.TD"] <- "TU-TD"
-  }
-
-  # Print message in console
+    # Print message in console
   print(ifelse(new_env == TRUE,
-               paste0(" Import complete. Views are located in VIEWS_WQ environment."),
+               paste0(" Import complete. Views are located in GLKN_", protocol, " environment."),
                paste0(" Import complete. Views are located in global environment.")), quote = FALSE)
 }

@@ -13,3 +13,4 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/KateMMiller/waterGLKN
 BugReports: https://github.com/KateMMiller/waterGLKN/issues
+RoxygenNote: 7.3.2
