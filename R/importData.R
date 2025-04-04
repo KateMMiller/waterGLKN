@@ -59,7 +59,7 @@ importData <- function(type = c("csv"), filepath = NA, protocol = "rivers", new_
   # check that filepath was specified for non-DSN options
   if(is.na(filepath)){stop(paste0("Must specify a filepath to the database when type = '",
                                   type, "' option."))}
-  if(!grepl("/$", filepath)){filepath <- paste0(filepath, "/")}
+  if(type == 'csv' & !grepl("/$", filepath)){filepath <- paste0(filepath, "/")}
 
   if(!file.exists(filepath)){
     stop(paste0("Specified file path does not exist. ",
@@ -81,7 +81,7 @@ importData <- function(type = c("csv"), filepath = NA, protocol = "rivers", new_
 
   env <- if(new_env == TRUE){
     if(protocol == 'rivers'){GLKN_rivers
-    } else if(protocl == "lakes"){GLKN_lakes
+    } else if(protocol == "lakes"){GLKN_lakes
     } else {.GlobalEnv}
   }
   }
