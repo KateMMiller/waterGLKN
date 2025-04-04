@@ -44,6 +44,8 @@
 #' river_zip = ("../data/GLKN_water/records-2306516.zip")
 #' importData(type = 'zip', filepath = river_zip, protocol = 'rivers')
 #'
+#'
+#'
 #' }
 #'
 #' @return Assigns water csvs to specified environment
@@ -146,7 +148,7 @@ importData <- function(type = c("csv"), filepath = NA, protocol = "rivers", new_
       },
       error = function(e){stop(paste0("Unable to import specified zip file."))})
 
-    z_list = zfiles[grepl(paste0(wq_views, collapse = "|"), zfiles)]
+    z_list = sort(zfiles[grepl(paste0(wq_views, collapse = "|"), zfiles)])
 
     # Drop date stamp (if it exists) from file name if exists in 2 steps
     z_list_names <- gsub("[[:digit:]]+|.csv", "", z_list)
@@ -171,7 +173,8 @@ importData <- function(type = c("csv"), filepath = NA, protocol = "rivers", new_
     # Import views now that all tests passed
     pb <- txtProgressBar(min = 0, max = length(z_list), style = 3)
 
-    wqviews <- unzip(filepath, junkpaths = TRUE, exdir = tempdir())
+    wqviews1 <- unzip(filepath, junkpaths = TRUE, exdir = tempdir())
+    wqviews <- sort(wqviews1[grepl(".csv", wqviews1)])
 
     view_import <-
       lapply(seq_along(wqviews), function(x){
