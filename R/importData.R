@@ -41,7 +41,7 @@
 #' path_river = "../data/GLKN_water/2309369"
 #' importData(filepath = path_river, protocol = "rivers")
 #'
-#' river_zip = ("../data/GLKN_water/records-2306516.zip")
+#' river_zip = ("../data/GLKN_water/records-2309369.zip")
 #' importData(type = 'zip', filepath = river_zip, protocol = 'rivers')
 #'
 #'
