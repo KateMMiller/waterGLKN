@@ -4,25 +4,23 @@
 \alias{importData}
 \title{importData: Import GLKN water data package}
 \usage{
-importData(type = c("csv"), filepath = NA, protocol = "rivers", new_env = TRUE)
+importData(type = "csv", filepath = NA, new_env = TRUE)
 }
 \arguments{
 \item{type}{Select how to import the data package.
 \describe{
 \item{"csv"}{Imports the csv version of the data package views from your local machine. If selected, must provide the
-filepath for the csvs in the filepath argument.}
+filepath for the csvs in the filepath argument. If importing both the rivers and lake data in the same call, data package views
+must be in separate folders for the two protocols.}
 \item{"zip"}{Imports the csv version of the data package views from your local machine as a zipped file. If selected, must provide the
 filepath and the name of the zip file.}
 }}
 
 \item{filepath}{Quoted filepath where data package files live if type = "csv" or type = "zip".}
 
-\item{protocol}{Quoted string of the protocol being imported. For the big rivers protocol, specify "rivers". For the
-inland lakes protocol, specify "lakes".}
-
-\item{new_env}{Logical. Specifies which environment to store views in. If \code{TRUE}(Default), stores
-views in GLKN_rivers or GLKN_lakes environment. If \code{FALSE}, stores views in global environment, with
-the protocol added as a suffix to the view name.}
+\item{new_env}{Logical. Specifies which environment to store views in. If \code{TRUE}(Default), stores views in GLKN_WQ
+environment. If \code{FALSE}, stores views in global environment. If both rivers and lakes data are imported in the same
+importData() call, they'll be row binded to their respective datasets, and can be queried either by site or site_type.}
 }
 \value{
 Assigns water csvs to specified environment
@@ -33,10 +31,11 @@ download the published data package from NPS DataStore manually (irma.nps.gov/da
 of published data packages. The latter option being for importing pre-certified for tasks like performing QC checks. The other option
 is to download a published data package using the NPSutils package. However, the NPSutils package has a lot of dependencies,
 including the terra package, which typically fails to install from CRAN. Once NPSutils is installed, the process is less cumbersome.
+You can import rivers or inland lakes data.
 
-Each csv (view) in the data package is either added to a GLKN_rivers or GLKN_lakes environment in your workspace, or to your
-global environment based on  whether new_env = TRUE or FALSE. If you want to import both rivers and lakes data, you need to run the
-importData() function for each, and set new_env = TRUE.
+Each csv (view) in the data package is added to a GLKN_WQ environment in your workspace, or to your global environment based on
+whether new_env = TRUE or FALSE. If you want to import both rivers and lakes data, include them in the same importData() function.
+The views will then be row binded together.
 }
 \examples{
 \dontrun{
@@ -46,13 +45,18 @@ devtools::install_github("nationalparkservice/NPSutils") # might take a few trie
 NPSutils::get_data_packages(c("2306516", "2309369"))
 
 path_lake = "../data/GLKN_water/2306516"
-importData(filepath = path_lake, protocol = "lakes")
+importData(filepath = path_lake)
 
 path_river = "../data/GLKN_water/2309369"
-importData(filepath = path_river, protocol = "rivers")
+importData(filepath = path_river)
 
-river_zip = ("../data/GLKN_water/records-2306516.zip")
-importData(type = 'zip', filepath = river_zip, protocol = 'rivers')
+# import both lakes and river data as csvs
+importData(type = 'csv', filepath = c(path_lake, path_river))
+
+# import both lakes and rivers data as zip files
+river_zip = ("../data/GLKN_water/records-2309369.zip")
+lake_zip = ("../data/GLKN_water/records-2306516.zip")
+importData(type = 'zip', filepath = c(river_zip, lake_zip))
 
 
 
