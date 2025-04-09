@@ -51,7 +51,7 @@
 #' @return Assigns water csvs to specified environment
 #' @export
 
-importData <- function(type = c("csv"), filepath = NA, protocol = "rivers", new_env = TRUE){
+importData <- function(type = "csv", filepath = NA, protocol = "rivers", new_env = TRUE){
 
   #-- Error handling --
   type <- match.arg(type, c("zip", "csv"))
@@ -187,7 +187,13 @@ importData <- function(type = c("csv"), filepath = NA, protocol = "rivers", new_
     close(pb)
   }
 
-    # Print message in console
+  # Add param abbr column to Results view
+  data("GLKN_WQ_abbreviations")
+  Results1 <- get("Results", envir = env)
+  Results <- merge(GLKN_WQ_abbreviations, Results1, by = c("Characteristic_Name", "Result_Unit"), all.y = T)
+  assign("Results", Results, envir = env)
+
+  # Print message in console
   print(ifelse(new_env == TRUE,
                paste0(" Import complete. Views are located in GLKN_", protocol, " environment."),
                paste0(" Import complete. Views are located in global environment.")), quote = FALSE)
