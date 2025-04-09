@@ -58,10 +58,13 @@
 #' importData(type = 'zip', filepath = c(river_zip, lake_zip))
 #'
 #' # Select only SACN sites
-#' sacn <- getLocations(park = "SACN")
+#' slbe <- getLocations(park = "SLBE")
 #'
 #' # Get Lake St. Croix sites
 #' lkstcr <- getLocations(site = c("SACN_STCR_20.0", "SACN_STCR_15.8", "SACN_STCR_2.0"))
+#'
+#' # Get all lakes in SACN
+#' sacn_lk <- getLocations(park = "SACN", site_type = "lake")
 #'
 #' }
 #' @export
@@ -91,14 +94,15 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
   site <- match.arg(site, several.ok = TRUE, c("all", Rivers, Lakes))
   stopifnot(is.logical(active))
 
+  #---- compile data ----
   env <- if(exists("GLKN_WQ")){GLKN_WQ} else {.GlobalEnv}
 
   loc <- get("Locations", envir = env)
 
-  loc$site_type <- NA_character_
-  loc$site_type[loc$Location_Type == "Lake"] <- 'lake'
-  loc$site_type[loc$Location_Type == "River/Stream"] <- 'river'
-  loc$site_type[loc$Location_Type == "River Impoundment"] <- 'impound'
+  loc$SiteType <- NA_character_
+  loc$SiteType[loc$Location_Type == "Lake"] <- 'lake'
+  loc$SiteType[loc$Location_Type == "River/Stream"] <- 'river'
+  loc$SiteType[loc$Location_Type == "River Impoundment"] <- 'impound'
 
   loc1 <- if(any(park == "all")){loc
   } else {filter(loc, Park_Code %in% park)}
@@ -107,13 +111,15 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
   } else {filter(loc1, Location_ID %in% site)}
 
   loc3 <- if(any(site_type == "all")){loc2
-  } else {filter(loc2, site_type %in% site_type)}
+  } else {filter(loc2, SiteType %in% site_type)}
 
   loc_final <-
   if(output == "short"){loc3[,c("Org_Code", "Park_Code", "Location_ID", "Location_Name",
-                                "Location_Type", "site_type", "Latitude", "Longitude",
+                                "Location_Type", "SiteType", "Latitude", "Longitude",
                                 "State_Code", "County_Code")]
   } else {loc3}
+
+  if(nrow(loc_final) == 0){stop("Specified arguments returned an empty data frame.")}
 
   return(data.frame(loc_final))
   } # end of function
