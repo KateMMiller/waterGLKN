@@ -31,7 +31,7 @@ GLKN_WQ_abbreviations <- data.frame(
     c('Potassium', 'mg/l', 'K_mgL'),
     c('Secchi Reading Condition (choice list)', 'None', 'SecchiCond'),
     c('Silicate', 'mg/l', 'Si_mgL'),
-    c('Sodium', 'mg/l', 'NA_mgL'),
+    c('Sodium', 'mg/l', 'Na_mgL'),
     c('Solids, Suspended (TSS)', 'mg/l', 'TSS_mgL'),
     c('Specific conductance', 'uS/cm', 'SpecCond_uScm'),
     c('Sulfur, sulfate (SO4) as SO4', 'mg/l', 'SO4_mgL'),
@@ -52,4 +52,4 @@ GLKN_WQ_abbreviations <- data.frame(
 
 colnames(GLKN_WQ_abbreviations) <- c("Characteristic_Name", "Result_Unit", "param_name")
 
-usethis::use_data(GLKN_WQ_abbreviations)
+usethis::use_data(GLKN_WQ_abbreviations, internal = T)

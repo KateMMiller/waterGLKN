@@ -75,6 +75,8 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
   #---- error handling ----
   park <- match.arg(park, several.ok = TRUE,
                     c("all", "APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA"))
+  park <- ifelse(any(park == "all"), c("APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA"), park)
+
   site_type <- match.arg(site_type, several.ok = TRUE, c("all", "impound", "lake", "river"))
 
   Rivers <- c('MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
@@ -92,6 +94,7 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
              'VOYA_20', 'VOYA_21', 'VOYA_22', 'VOYA_23', 'VOYA_24', 'VOYA_25')
 
   site <- match.arg(site, several.ok = TRUE, c("all", Rivers, Lakes))
+  site <- ifelse(any(site == "all"), c(Rivers, Lakes), park)
   stopifnot(is.logical(active))
 
   #---- compile data ----

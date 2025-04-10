@@ -57,7 +57,7 @@
 
 importData <- function(type = "csv", filepath = NA, new_env = TRUE){
 
-  #-- Error handling --
+  #---- Error handling ----
   type <- match.arg(type, c("zip", "csv"))
   stopifnot(class(new_env) == 'logical')
 
@@ -94,7 +94,7 @@ importData <- function(type = "csv", filepath = NA, new_env = TRUE){
   # Vector of file names in filepath that end in .csv (ie the data package views)
   wq_views <- c("Characteristics", "HUC", "Locations", "Projects", "Results")
 
-  #-- Import from csvs --
+  #---- Import from csvs ----
 
   if(type == "csv"){
     if(length(filepath) == 1){
@@ -220,6 +220,7 @@ importData <- function(type = "csv", filepath = NA, new_env = TRUE){
     }
     }
 
+  #---- import zips ----
   if(type == "zip"){
     if(length(filepath) == 1){
     # Check if can read files within the zip file
@@ -287,7 +288,7 @@ importData <- function(type = "csv", filepath = NA, new_env = TRUE){
       if(length(miss_vws2) > 0){stop(paste0("Missing the following views from the following zip: ",
                                             filepath[[2]], paste0(miss_vws2, collapse = ", ")))}
 
-      pb <- textProgressBar(min = 0, max = length(zlist1), style = 3)
+      pb <- txtProgressBar(min = 0, max = length(zlist1), style = 3)
       dir.create(paste0(tempdir(), "\\1"))
       dir.create(paste0(tempdir(), "\\2"))
 
@@ -319,7 +320,7 @@ importData <- function(type = "csv", filepath = NA, new_env = TRUE){
   }
 
   # Add param abbr column to Results view
-  data("GLKN_WQ_abbreviations")
+  #data("GLKN_WQ_abbreviations")
   Results1 <- get("Results", envir = env)
   Results <- merge(GLKN_WQ_abbreviations, Results1, by = c("Characteristic_Name", "Result_Unit"), all.y = T)
   assign("Results", Results, envir = env)
