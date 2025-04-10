@@ -111,7 +111,9 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
   loc$site_type[loc$Location_Type == "Lake"] <- 'lake'
   loc$site_type[loc$Location_Type == "River/Stream"] <- 'river'
   loc$site_type[loc$Location_Type == "River Impoundment"] <- 'impound'
-  loc$protocol <- ifelse(loc$Location_ID %in% "Rivers", "Rivers", "Inland Lakes")
+  loc$protocol <- NA_character_
+  loc$protocol[loc$Location_ID %in% Rivers] <- "Rivers"
+  loc$protocol[loc$Location_ID %in% Lakes] <- "Inland Lakes"
 
   loc1 <- if(any(park == "all")){loc
   } else {filter(loc, Park_Code %in% park)}
