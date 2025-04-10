@@ -52,4 +52,4 @@ GLKN_WQ_abbreviations <- data.frame(
 
 colnames(GLKN_WQ_abbreviations) <- c("Characteristic_Name", "Result_Unit", "param_name")
 
-usethis::use_data(GLKN_WQ_abbreviations, internal = T)
+usethis::use_data(GLKN_WQ_abbreviations, internal = T, overwrite = T)
