@@ -1,0 +1,5 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^testing_scripts$
+^docs$
+^scripts$
