@@ -31,4 +31,4 @@ site_by_year$num_samps <- rowSums(site_by_year[,col_numbs])
 site_by_year$active <- ifelse(site_by_year$num_samps > 0, TRUE, FALSE)
 
 active_sites <- site_by_year[,c("Location_ID", "active")]
-usethis::use_data(active_sites, internal = T, overwrite = TRUE)
+usethis::use_data(active_sites, GLKN_WQ_abbreviations, internal = T, overwrite = TRUE)
