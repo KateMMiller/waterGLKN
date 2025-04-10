@@ -212,7 +212,7 @@ getResults <- function(park = "all", site = "all", site_type = "all",
                   "Activity_Relative_Depth", "Activity_Depth", "Activity_Depth_Unit", "Activity_Group_Type", "samp_type",
                   "Characteristic_Name", "param_name", "Result_Detection_Condition",
                   "Result_Text", "value", "value_cen", "censored", "Result_Unit",
-                  "Method_Detection_Limit", "Lower_Quantification_Limit", "Upper_Quantification_Limit")]}
+                  "Method_Detection_Limit", "Lower_Quantification_Limit", "Upper_Quantification_Limit", "Result_Comment")]}
 
   if(nrow(res_final) == 0){stop("Specified arguments returned an empty data frame.")}
 
