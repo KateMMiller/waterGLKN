@@ -9,10 +9,11 @@ getResults(
   site = "all",
   site_type = "all",
   sample_type = "VS",
-  years = 2006:format(Sys.Date(), "\%Y"),
-  months = 5:10,
+  years = 2007:format(Sys.Date(), "\%Y"),
+  months = 4:10,
   active = TRUE,
   parameter = "all",
+  sample_depth = "all",
   include_censored = FALSE,
   output = "short"
 )
@@ -68,11 +69,12 @@ Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU
 
 \item{years}{Numeric. Years to query. Accepted values start at 2007.}
 
-\item{months}{Numeric. Months to query by number. Accepted values range from 1:12. #+++++ CHECK THIS Note +++++
-that most of the events are between months 5 and 10, and these are set as the defaults.}
+\item{months}{Numeric. Months to query by number. Accepted values range from 1:12. Default month range is
+4:10, as most non-QAQC sample events occur between the months of April and October.}
 
-\item{active}{Logical. If TRUE (Default) only queries actively monitored sites. If FALSE, returns all sites that have been monitored.
-#+++++ NOT CURRENTLY ENABLED +++++}
+\item{active}{Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
+locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
+least one sampling event between 2014 and 2024. See "./scripts/active_sites.R" for more details.}
 
 \item{parameter}{Specify the parameter(s) to return. Note if additional parameters are added to the Results view,
 they need to be added as accepted values in this function. Current accepted values are:
@@ -83,16 +85,16 @@ they need to be added as accepted values in this function. Current accepted valu
      "WaterLevelRef_m", "WaveHt_cm", "WaveHt_m",
      "WindCond", "WindDir_Deg")}
 
+\item{sample_depth}{Quoted string. Filters on sample depth. If "all" (default), returns all sample depths.
+If "surface", only returns data from the uppermost sample.}
+
 \item{include_censored}{Logical. If TRUE, the value column includes non-censored and censored values
 using the MDL/MRL/UQL values in the parameter flags. If the Flag column is not NA, that indicates
 the value is a censored value. If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
 are returned in the value column.}
 
-\item{output}{Specify if you want all fields returned (output = "verbose") or just the most important
-fields (output = "short"; default.)}
-
-\item{sample_depth}{Quoted string. Filters on sample depth. If "all" (default), returns all sample depths.
-If "surface", only returns data from the uppermost sample.}
+\item{output}{Specify if you want all fields returned (output = "verbose") or just the most important fields
+(output = "short"; default.)}
 }
 \value{
 Data frame of GLKN water data

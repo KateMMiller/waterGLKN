@@ -2,7 +2,7 @@
 #'
 #' @description Queries GLKN water sampling locations by park and Location ID
 #'
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter left_join
 #'
 #' @param park Combine data from all parks or one or more parks at a time. Valid inputs:
 #'  \describe{
@@ -44,8 +44,9 @@
 #'  \item{"impound"}{Location_types taht = "River Impoundment"}
 #'  }
 #'
-#' @param active Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all locations that have been monitored.
-#' Currently not activated. Need a column in the Locations table that indicates active locations.
+#' @param active Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
+#' locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
+#' least one sampling event between 2014 and 2024. See "./scripts/active_sites.R" for more details.
 #'
 #' @param output Specify if you want all fields returned (output = "verbose") or just the most important fields (output = "short"; default.)
 #'
@@ -75,7 +76,7 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
   #---- error handling ----
   park <- match.arg(park, several.ok = TRUE,
                     c("all", "APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA"))
-  park <- ifelse(any(park == "all"), c("APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA"), park)
+  if(any(park == "all")){park = c("APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA")} else {park}
 
   site_type <- match.arg(site_type, several.ok = TRUE, c("all", "impound", "lake", "river"))
 
@@ -94,18 +95,23 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
              'VOYA_20', 'VOYA_21', 'VOYA_22', 'VOYA_23', 'VOYA_24', 'VOYA_25')
 
   site <- match.arg(site, several.ok = TRUE, c("all", Rivers, Lakes))
-  site <- ifelse(any(site == "all"), c(Rivers, Lakes), park)
+  if(any(site == "all")){site = c(Rivers, Lakes)} else {site}
   stopifnot(is.logical(active))
 
   #---- compile data ----
   env <- if(exists("GLKN_WQ")){GLKN_WQ} else {.GlobalEnv}
 
-  loc <- get("Locations", envir = env)
+  tryCatch({loc <- get("Locations", envir = env)},
+           error = function(e){stop("GLKN water views not found. Please import data.")}
+  )
+
+  load("./R/sysdata.rda") # for active_sites
 
   loc$SiteType <- NA_character_
-  loc$SiteType[loc$Location_Type == "Lake"] <- 'lake'
-  loc$SiteType[loc$Location_Type == "River/Stream"] <- 'river'
-  loc$SiteType[loc$Location_Type == "River Impoundment"] <- 'impound'
+  loc$site_type[loc$Location_Type == "Lake"] <- 'lake'
+  loc$site_type[loc$Location_Type == "River/Stream"] <- 'river'
+  loc$site_type[loc$Location_Type == "River Impoundment"] <- 'impound'
+  loc$protocol <- ifelse(loc$Location_ID %in% "Rivers", "Rivers", "Inland Lakes")
 
   loc1 <- if(any(park == "all")){loc
   } else {filter(loc, Park_Code %in% park)}
@@ -116,11 +122,16 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
   loc3 <- if(any(site_type == "all")){loc2
   } else {filter(loc2, SiteType %in% site_type)}
 
+  loc4 <- left_join(loc3, active_sites, by = "Location_ID")
+
+  loc5 <- if(active == T){filter(loc4, active == TRUE)
+  } else {loc4}
+
   loc_final <-
-  if(output == "short"){loc3[,c("Org_Code", "Park_Code", "Location_ID", "Location_Name",
-                                "Location_Type", "SiteType", "Latitude", "Longitude",
-                                "State_Code", "County_Code")]
-  } else {loc3}
+  if(output == "short"){loc5[,c("Org_Code", "Park_Code", "Location_ID", "Location_Name",
+                                "Location_Type", "protocol", "site_type", "Latitude", "Longitude",
+                                "State_Code", "County_Code", "active")]
+  } else {loc5}
 
   if(nrow(loc_final) == 0){stop("Specified arguments returned an empty data frame.")}
 

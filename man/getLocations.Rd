@@ -53,8 +53,9 @@ Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU
  \item{"impound"}{Location_types taht = "River Impoundment"}
  }}
 
-\item{active}{Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all locations that have been monitored.
-Currently not activated. Need a column in the Locations table that indicates active locations.}
+\item{active}{Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
+locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
+least one sampling event between 2014 and 2024. See "./scripts/active_sites.R" for more details.}
 
 \item{output}{Specify if you want all fields returned (output = "verbose") or just the most important fields (output = "short"; default.)}
 }
