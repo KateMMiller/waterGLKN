@@ -10,7 +10,7 @@ getResults(
   site_type = "all",
   sample_type = "VS",
   years = 2007:format(Sys.Date(), "\%Y"),
-  months = 4:10,
+  months = 4:11,
   active = TRUE,
   parameter = "all",
   sample_depth = "all",
@@ -70,7 +70,7 @@ Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU
 \item{years}{Numeric. Years to query. Accepted values start at 2007.}
 
 \item{months}{Numeric. Months to query by number. Accepted values range from 1:12. Default month range is
-4:10, as most non-QAQC sample events occur between the months of April and October.}
+4:11, as most non-QAQC sample events occur between the months of April and November.}
 
 \item{active}{Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
 locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
