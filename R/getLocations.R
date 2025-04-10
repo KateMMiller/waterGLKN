@@ -105,7 +105,7 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
            error = function(e){stop("GLKN water views not found. Please import data.")}
   )
 
-  load("./R/sysdata.rda") # for active_sites
+  #load("./R/sysdata.rda") # for active_sites
 
   loc$SiteType <- NA_character_
   loc$site_type[loc$Location_Type == "Lake"] <- 'lake'
@@ -124,6 +124,7 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
   loc3 <- if(any(site_type == "all")){loc2
   } else {filter(loc2, SiteType %in% site_type)}
 
+  data(active_sites, envir = environment())
   loc4 <- left_join(loc3, active_sites, by = "Location_ID")
 
   loc5 <- if(active == T){filter(loc4, active == TRUE)

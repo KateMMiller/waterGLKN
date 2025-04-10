@@ -321,7 +321,9 @@ importData <- function(type = "csv", filepath = NA, new_env = TRUE){
   }
 
   # Add param abbr column to Results view
-  load("./R/sysdata.rda") # for GLKN_WQ_abbreviations
+  #load("./R/sysdata.rda") # for GLKN_WQ_abbreviations
+  data(GLKN_WQ_abbreviations, envir = environment())
+  # print(environment())
   Results1 <- get("Results", envir = env)
   Results <- merge(GLKN_WQ_abbreviations, Results1, by = c("Characteristic_Name", "Result_Unit"), all.y = T)
   assign("Results", Results, envir = env)
