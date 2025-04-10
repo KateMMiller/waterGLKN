@@ -289,8 +289,8 @@ importData <- function(type = "csv", filepath = NA, new_env = TRUE){
                                             filepath[[2]], paste0(miss_vws2, collapse = ", ")))}
 
       pb <- txtProgressBar(min = 0, max = length(zlist1), style = 3)
-      dir.create(paste0(tempdir(), "\\1"))
-      dir.create(paste0(tempdir(), "\\2"))
+      if(!file.exists(paste0(tempdir(), "\\1"))){dir.create(paste0(tempdir(), "\\1"))}
+      if(!file.exists(paste0(tempdir(), "\\2"))){dir.create(paste0(tempdir(), "\\2"))}
 
       z_names <- gsub("[[:digit:]]+|.csv", "", zlist1)
       z_names <- gsub("./", "", z_names)
@@ -316,6 +316,7 @@ importData <- function(type = "csv", filepath = NA, new_env = TRUE){
       view_import <- setNames(view_import, z_names)
       list2env(view_import, envir = env)
       close(pb)
+
       } # end of fp 2
   }
 
