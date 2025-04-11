@@ -140,7 +140,7 @@ getResults <- function(park = "all", site = "all", site_type = "all",
   sample_depth <- match.arg(sample_depth, c("surface", "all"))
 
   params <- c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ppb", "ChlA_ugL", "Cl_mgL", "Depth_m",
-              "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL", "NA_mgL",
+              "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL", "Na_mgL",
               "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "SecchiCond", "SecchiDepth_m", "Si_mgL", "SO4_mgL",
               "SpecCond_uScm", "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
               "WaterLevelRef_m", "WaveHt_cm", "WaveHt_m", "WindCond", "WindDir_Deg")
