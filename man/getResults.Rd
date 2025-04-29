@@ -62,9 +62,8 @@ Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU
 \item{sample_type}{Select the sample type. Options available are below Can only choose one option.
 \describe{
 \item{"all"}{All possible sampling events.}
-\item{"VS"}{Default. GLKN Vital Signs monitoring events, which matches all Activity_Group_Type == "Field Set".}
-\item{"QC"}{Activity_Group_Type == "QC Sample".}
-\item{"rep"}{Activity_Group_Type == "Replicate"}
+\item{"VS"}{Default. GLKN Vital Signs monitoring events, which matches all non-QAQC Activity_Types.}
+\item{"QC"}{Includes only include Quality Control sampling events listed in Activity_Type.}
 }}
 
 \item{years}{Numeric. Years to query. Accepted values start at 2007.}
@@ -81,7 +80,7 @@ they need to be added as accepted values in this function. Current accepted valu
    c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ppb", "ChlA_ugL", "Cl_mgL", "Depth_m",
      "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL", "NA_mgL",
      "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "SecchiCond", "Secchi_m", "Si_mgL", "SO4_mgL",
-     "SpCond_uScm", "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
+     "SpecCond_uScm", "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
      "WaterLevelRef_m", "WaveHt_cm", "WaveHt_m",
      "WindCond", "WindDir_Deg")}
 

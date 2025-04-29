@@ -49,9 +49,8 @@
 #' @param sample_type Select the sample type. Options available are below Can only choose one option.
 #' \describe{
 #' \item{"all"}{All possible sampling events.}
-#' \item{"VS"}{Default. GLKN Vital Signs monitoring events, which matches all Activity_Group_Type == "Field Set".}
-#' \item{"QC"}{Activity_Group_Type == "QC Sample".}
-#' \item{"rep"}{Activity_Group_Type == "Replicate"}
+#' \item{"VS"}{Default. GLKN Vital Signs monitoring events, which matches all non-QAQC Activity_Types.}
+#' \item{"QC"}{Includes only include Quality Control sampling events listed in Activity_Type.}
 #' }
 #'
 #' @param years Numeric. Years to query. Accepted values start at 2007.
@@ -68,7 +67,7 @@
 #'    c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ppb", "ChlA_ugL", "Cl_mgL", "Depth_m",
 #'      "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL", "NA_mgL",
 #'      "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "SecchiCond", "Secchi_m", "Si_mgL", "SO4_mgL",
-#'      "SpCond_uScm", "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
+#'      "SpecCond_uScm", "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
 #'      "WaterLevelRef_m", "WaveHt_cm", "WaveHt_m",
 #'      "WindCond", "WindDir_Deg")
 #'
@@ -113,7 +112,7 @@ getResults <- function(park = "all", site = "all", site_type = "all",
 
   site_type <- match.arg(site_type, several.ok = TRUE, c("all", "impound", "lake", "river"))
 
-  sample_type <- match.arg(sample_type, several.ok = T, c("all", "VS", "QC", "rep"))
+  sample_type <- match.arg(sample_type, several.ok = T, c("all", "VS", "QC"))
 
   Rivers <- c('MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
               'SACN_CLAM_0.7', 'SACN_KINI_2.2', 'SACN_NAKA_4.8', 'SACN_NAKA_41.3', 'SACN_NAKA_74.5', 'SACN_NAKA_84.6',
@@ -142,7 +141,7 @@ getResults <- function(park = "all", site = "all", site_type = "all",
   params <- c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ppb", "ChlA_ugL", "Cl_mgL", "Depth_m",
               "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL", "Na_mgL",
               "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "SecchiCond", "Secchi_m", "Si_mgL", "SO4_mgL",
-              "SpCond_uScm", "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
+              "SpecCond_uScm", "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
               "WaterLevelRef_m", "WaveHt_cm", "WaveHt_m", "WindCond", "WindDir_Deg")
 
   parameter <- match.arg(parameter, several.ok = T, c("all", params))
@@ -172,9 +171,8 @@ getResults <- function(park = "all", site = "all", site_type = "all",
   res1$month <- as.numeric(substr(res1$sample_date, 6, 7))
   res1$doy <- as.numeric(format(as.Date(res1$sample_date, format = "%Y-%m-%d"), "%j"))
   res1$samp_type <- NA_character_
-  res1$samp_type[res1$Activity_Group_Type == "Field Set"] <- "VS"
-  res1$samp_type[res1$Activity_Group_Type == "QC Sample"] <- "QC"
-  res1$samp_type[res1$Activity_Group_Type == "Replicate"] <- "rep"
+  res1$samp_type[!grepl("QC|Quality Control", res1$Activity_Group_Type)] <- "VS"
+  res1$samp_type[grepl("QC|Quality Control", res1$Activity_Group_Type)] <- "QC"
 
   # Handle censored values
   res1$value <- suppressWarnings(as.numeric(res1$Result_Text))
