@@ -107,7 +107,17 @@ river_zip = ("../data/GLKN_water/records-2309369.zip")
 lake_zip = ("../data/GLKN_water/records-2306516.zip")
 importData(type = 'zip', filepath = c(river_zip, lake_zip))
 
-#+++++ ADD EXAMPLES +++++
+# get all non-QC, non censored samples
+res <- getResults()
+
+# include censored samples
+resC <- getResults(include_cenored = T)
+
+# return samples from 2024 only
+res24 <- getResults(years = 2024)
+
+# Get only pH for SACN sites
+pH_SACN <- getResults(park = "SACN", parameter = "pH")
 
 }
 }

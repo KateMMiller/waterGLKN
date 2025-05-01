@@ -90,7 +90,17 @@
 #' lake_zip = ("../data/GLKN_water/records-2306516.zip")
 #' importData(type = 'zip', filepath = c(river_zip, lake_zip))
 #'
-#' #+++++ ADD EXAMPLES +++++
+#' # get all non-QC, non censored samples
+#' res <- getResults()
+#'
+#' # include censored samples
+#' resC <- getResults(include_cenored = T)
+#'
+#' # return samples from 2024 only
+#' res24 <- getResults(years = 2024)
+#'
+#' # Get only pH for SACN sites
+#' pH_SACN <- getResults(park = "SACN", parameter = "pH")
 #'
 #' }
 #' @export
@@ -171,8 +181,8 @@ getResults <- function(park = "all", site = "all", site_type = "all",
   res1$month <- as.numeric(substr(res1$sample_date, 6, 7))
   res1$doy <- as.numeric(format(as.Date(res1$sample_date, format = "%Y-%m-%d"), "%j"))
   res1$samp_type <- NA_character_
-  res1$samp_type[!grepl("QC|Quality Control", res1$Activity_Group_Type)] <- "VS"
-  res1$samp_type[grepl("QC|Quality Control", res1$Activity_Group_Type)] <- "QC"
+  res1$samp_type[!grepl("QC|Quality Control", res1$Activity_Type)] <- "VS"
+  res1$samp_type[grepl("QC|Quality Control", res1$Activity_Type)] <- "QC"
 
   # Handle censored values
   res1$value <- suppressWarnings(as.numeric(res1$Result_Text))
@@ -203,7 +213,7 @@ getResults <- function(park = "all", site = "all", site_type = "all",
   res_final <- if(any(output == "verbose")){res8
   } else {res8[,c("Org_Code","Park_Code", "Project_ID", "Location_ID", "Location_Name", "site_type", "protocol",
                   "sample_date", "year", "month", "doy",
-                  "Activity_Relative_Depth", "Activity_Depth", "Activity_Depth_Unit", "Activity_Group_Type", "samp_type",
+                  "Activity_Relative_Depth", "Activity_Depth", "Activity_Depth_Unit", "Activity_Type", "samp_type",
                   "Characteristic_Name", "param_name", "Result_Detection_Condition",
                   "Result_Text", "value", "value_cen", "censored", "Result_Unit",
                   "Method_Detection_Limit", "Lower_Quantification_Limit", "Upper_Quantification_Limit", "Result_Comment")]}

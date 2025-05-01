@@ -58,7 +58,7 @@
 #' lake_zip = ("../data/GLKN_water/records-2306516.zip")
 #' importData(type = 'zip', filepath = c(river_zip, lake_zip))
 #'
-#' # Select only SACN sites
+#' # Select only SLBE sites
 #' slbe <- getLocations(park = "SLBE")
 #'
 #' # Get Lake St. Croix sites
