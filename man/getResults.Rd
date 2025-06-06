@@ -88,8 +88,9 @@ they need to be added as accepted values in this function. Current accepted valu
 If "surface", only returns data from the uppermost sample.}
 
 \item{include_censored}{Logical. If TRUE, the value column includes non-censored and censored values
-using the MDL/MRL/UQL values in the parameter flags. If the Flag column is not NA, that indicates
-the value is a censored value. If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
+using the Lower/Upper Quantification Limits values. Censored values are indicated by censored = TRUE, and
+are defined as records where the Result_Detection_Condition = Present Above/Below Quantification Limit.
+If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
 are returned in the value column.}
 
 \item{output}{Specify if you want all fields returned (output = "verbose") or just the most important fields

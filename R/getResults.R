@@ -75,8 +75,9 @@
 #' If "surface", only returns data from the uppermost sample.
 #'
 #' @param include_censored Logical. If TRUE, the value column includes non-censored and censored values
-#' using the MDL/MRL/UQL values in the parameter flags. If the Flag column is not NA, that indicates
-#' the value is a censored value. If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
+#' using the Lower/Upper Quantification Limits values. Censored values are indicated by censored = TRUE, and
+#' are defined as records where the Result_Detection_Condition = Present Above/Below Quantification Limit.
+#' If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
 #' are returned in the value column.
 #'
 #' @param output Specify if you want all fields returned (output = "verbose") or just the most important fields
@@ -186,14 +187,21 @@ getResults <- function(park = "all", site = "all", site_type = "all",
 
   # Handle censored values
   res1$value <- suppressWarnings(as.numeric(res1$Result_Text))
+
   res1$value_cen <- NA_real_
+
   res1$value_cen[res1$Result_Detection_Condition %in% "Detected and Quantified"] <-
     res1$value[res1$Result_Detection_Condition %in% "Detected and Quantified"]
+
   res1$value_cen[res1$Result_Detection_Condition %in% "Present Above Quantification Limit"] <-
     res1$Upper_Quantification_Limit[res1$Result_Detection_Condition %in% "Present Above Quantification Limit"]
+
   res1$value_cen[res1$Result_Detection_Condition %in% "Present Below Quantification Limit"] <-
     res1$Lower_Quantification_Limit[res1$Result_Detection_Condition %in% "Present Below Quantification Limit"]
+
   res1$censored <- ifelse(res1$Result_Detection_Condition %in% "Detected and Quantified", FALSE, TRUE)
+
+  res1$value <- if(include_censored == TRUE){res1$value_cen} else {res1$value}
 
   res2 <- if(any(parameter %in% "all")){res1
   } else {filter(res1, param_name %in% parameter)}
@@ -203,7 +211,7 @@ getResults <- function(park = "all", site = "all", site_type = "all",
   } else {filter(res4, samp_type %in% sample_type)}
 
   res6 <- if(any(sample_depth %in% "all")){res5
-  } else {filter(res5, Activity_Relative_Depth %in% "surface")}
+  } else {filter(res5, is.na(Activity_Relative_Depth) | Activity_Relative_Depth %in% "Surface")}
 
   res7 <- if(any(include_censored == TRUE)){res6
   } else {filter(res6, censored == FALSE)}
@@ -215,7 +223,7 @@ getResults <- function(park = "all", site = "all", site_type = "all",
                   "sample_date", "year", "month", "doy",
                   "Activity_Relative_Depth", "Activity_Depth", "Activity_Depth_Unit", "Activity_Type", "samp_type",
                   "Characteristic_Name", "param_name", "Result_Detection_Condition",
-                  "Result_Text", "value", "value_cen", "censored", "Result_Unit",
+                  "Result_Text", "value", "censored", "Result_Unit",
                   "Method_Detection_Limit", "Lower_Quantification_Limit", "Upper_Quantification_Limit", "Result_Comment")]}
 
   if(nrow(res_final) == 0){stop("Specified arguments returned an empty data frame.")}

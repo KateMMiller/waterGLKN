@@ -21,3 +21,8 @@ Collate:
     'getResults.R'
     'importData.R'
     'theme_WQ.R'
+    'plotLakeProfile.R'
+    'plotScatterPlot.R'
+    'plotTrend.R'
+    'plotWaterBands.R'
+    'sumEvents.R'
