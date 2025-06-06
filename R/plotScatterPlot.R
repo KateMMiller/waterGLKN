@@ -11,7 +11,8 @@
 #' Note that if you specify a site and parameter combination that doesn't exist (e.g., a stream site and a parameter
 #' only collected in lakes), the function will return an error message instead of an empty plot. This function only works
 #' with surface measurements. If more than one measurement occurs for a give site, day, parameter, and Activity_Depth_Group,
-#' the median of the values will be used.
+#' the median of the values will be used. Only plots measurements that are part of Vital Signs monitoring (i.e. no QC records),
+#' and non-censored records.
 #'
 #' @param park Combine data from all parks or one or more parks at a time. Valid inputs:
 #' \describe{
@@ -25,7 +26,7 @@
 #' \item{"SLBE"}{Sleeping Bear National Lakeshore}
 #' \item{"SACN"}{St. Croix National Scenic Riverway}
 #' \item{"VOYA"}{Voyageurs National Park}
-#'
+#' }
 #' @param site Filter on Location_ID. Easiest way to pick a site. Defaults to "all". Accepted sites are below.
 #' If new sites are added, need to be added to this function as an accepted site.
 #'
@@ -68,12 +69,6 @@
 #'       "Na_mgL", "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "Secchi_m", "Si_mgL", "SO4_mgL", "SpecCond_uScm",
 #'       "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
 #'       "WaveHt_cm", "WaveHt_m", "WindDir_Deg").
-#'
-#' @param include_censored Logical. If TRUE, the value column includes non-censored and censored values
-#' using the Lower/Upper Quantification Limits values. Censored values are indicated by censored = TRUE, and
-#' are defined as records where the Result_Detection_Condition = Present Above/Below Quantification Limit.
-#' If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
-#' are returned in the value column.
 #'
 #' @param layers Options are "points" and "smooth". By default, both will plot. If "smooth" specified, will plot a loess
 #' smoothed line. See span for more details. If only points specified, will return a scatterplot.
@@ -142,7 +137,7 @@ plotScatterPlot <- function(park = "all",
                             active = TRUE,
                             parameters = NA,
                             sample_depth = "surface",
-                            include_censored = FALSE,
+                            #include_censored = FALSE,
                             layers = c("points", "smooth"),
                             palette = "viridis",
                             span = 0.3,
@@ -183,7 +178,7 @@ plotScatterPlot <- function(park = "all",
   stopifnot(class(active) == "logical")
   stopifnot(length(parameters) == 2)
   sample_depth <- match.arg(sample_depth, c("all", "surface"))
-  stopifnot(class(include_censored) == "logical")
+  #stopifnot(class(include_censored) == "logical")
   layers <- match.arg(layers, c("points", "smooth"), several.ok = TRUE)
   stopifnot(class(span) %in% "numeric")
   stopifnot(class(facet_site) == "logical")
@@ -203,16 +198,16 @@ plotScatterPlot <- function(park = "all",
     stop("At least one specified parameter is not an accepted value.")}
 
   wdat_p1 <-
-    getResults(park = park, site = site, site_type = site_type, sample_type = sample_type, year = year,
+    getResults(park = park, site = site, site_type = site_type, sample_type = "VS", year = year,
                months = months, active = active, parameter = parameters[1], sample_depth = sample_depth,
-               include_censored = include_censored) |>
+               include_censored = FALSE) |>
     group_by(Location_ID, year, month, sample_date, doy, Activity_Relative_Depth, param_name, censored) |>
     summarize(value = median(value, na.rm = T), .groups = 'keep')
 
   wdat_p2 <-
-    getResults(park = park, site = site, site_type = site_type, sample_type = sample_type, year = year,
+    getResults(park = park, site = site, site_type = site_type, sample_type = "VS", year = year,
                months = months, active = active, parameter = parameters[2], sample_depth = sample_depth,
-               include_censored = include_censored) |>
+               include_censored = FALSE) |>
     group_by(Location_ID, year, month, sample_date, doy, Activity_Relative_Depth, param_name, censored) |>
     summarize(value = median(value, na.rm = T), .groups = 'keep')
 
@@ -222,6 +217,8 @@ plotScatterPlot <- function(park = "all",
 
   # Drop NAs for params not sampled every month
   wdat <- wdat[!with(wdat, is.na(value_y) | is.na(value_x)),]
+
+  if(nrow(wdat) == 0){stop("Specified function arguments returned an empty dataframe. Be sure the year, site, parameter combinations have data.")}
 
   y_lab <- ifelse(grepl("_", parameters[1]), paste0(gsub("_", " (", parameters[1]), ")"), paste0(parameters[1]))
   x_lab <- ifelse(grepl("_", parameters[2]), paste0(gsub("_", " (", parameters[2]), ")"), paste0(parameters[2]))
@@ -241,6 +238,8 @@ plotScatterPlot <- function(park = "all",
   facetsite <- ifelse(length(unique(wdat$Location_ID)) > 1 & facet_site == TRUE, TRUE, FALSE)
 
   #-- Create plot --
+  wdat$censored <- ifelse(wdat$censored_x + wdat$censored_y > 0, TRUE, FALSE)
+
   scatplot <-
       ggplot(wdat, aes(x = value_x, y = value_y, group = Location_ID, color = Location_ID, fill = Location_ID)) +
       # layers
@@ -252,6 +251,8 @@ plotScatterPlot <- function(park = "all",
                                      "Y Variable: ", y_lab, "<br>",
                                      "Y: ", round(value_y, 1), "<br>")),
                  alpha = 0.4, size = 2.5) +
+      # geom_point(aes(shape = censored), alpha = 0.4, size = 2.5) +
+      # scale_shape_manual(values = c(16, 8), name = "Censored") +
       # facets
       {if(facetsite == TRUE) facet_wrap(~Location_ID, scales = 'free_y', ncol = numcol)} +
       # themes
