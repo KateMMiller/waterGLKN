@@ -132,7 +132,7 @@ plotScatterPlot <- function(park = "all",
                             site = "all",
                             site_type = "all",
                             sample_type = "VS",
-                            year = 2007:format(Sys.Date(), "%Y"),
+                            years = 2007:format(Sys.Date(), "%Y"),
                             months = 4:11,
                             active = TRUE,
                             parameters = NA,
@@ -198,14 +198,14 @@ plotScatterPlot <- function(park = "all",
     stop("At least one specified parameter is not an accepted value.")}
 
   wdat_p1 <-
-    getResults(park = park, site = site, site_type = site_type, sample_type = "VS", year = year,
+    getResults(park = park, site = site, site_type = site_type, sample_type = "VS", years = years,
                months = months, active = active, parameter = parameters[1], sample_depth = sample_depth,
                include_censored = FALSE) |>
     group_by(Location_ID, year, month, sample_date, doy, Activity_Relative_Depth, param_name, censored) |>
     summarize(value = median(value, na.rm = T), .groups = 'keep')
 
   wdat_p2 <-
-    getResults(park = park, site = site, site_type = site_type, sample_type = "VS", year = year,
+    getResults(park = park, site = site, site_type = site_type, sample_type = "VS", years = years,
                months = months, active = active, parameter = parameters[2], sample_depth = sample_depth,
                include_censored = FALSE) |>
     group_by(Location_ID, year, month, sample_date, doy, Activity_Relative_Depth, param_name, censored) |>
@@ -218,7 +218,7 @@ plotScatterPlot <- function(park = "all",
   # Drop NAs for params not sampled every month
   wdat <- wdat[!with(wdat, is.na(value_y) | is.na(value_x)),]
 
-  if(nrow(wdat) == 0){stop("Specified function arguments returned an empty dataframe. Be sure the year, site, parameter combinations have data.")}
+  if(nrow(wdat) == 0){stop("Combination of sites, years, and parameters returned a data frame with no records.")}
 
   y_lab <- ifelse(grepl("_", parameters[1]), paste0(gsub("_", " (", parameters[1]), ")"), paste0(parameters[1]))
   x_lab <- ifelse(grepl("_", parameters[2]), paste0(gsub("_", " (", parameters[2]), ")"), paste0(parameters[2]))
