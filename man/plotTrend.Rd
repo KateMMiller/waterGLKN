@@ -16,7 +16,10 @@ plotTrend(
   sample_depth = "surface",
   include_censored = FALSE,
   layers = c("points", "lines"),
+  point_size = 1,
+  line_size = 1,
   palette = "viridis",
+  smooth = TRUE,
   span = 0.3,
   facet_site = TRUE,
   facet_scales = "free_y",
@@ -30,7 +33,6 @@ plotTrend(
 \describe{
 \item{"all"}{Includes all parks in the network}
 \item{"APIS"}{Apostle Islands National Lakeshore}
-\item{"GRPO"}{Grand Portage National Monument}
 \item{"INDU"}{Indiana Dunes National Park}
 \item{"ISRO"}{Isle Royale National Park}
 \item{"MISS"}{Mississippi National River and Recreation Area}
@@ -66,7 +68,7 @@ Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU
  \item{"impound"}{Location_types taht = "River Impoundment"}
  }}
 
-\item{sample_type}{Select the sample type. Options available are below Can only choose one option.
+\item{sample_type}{Select the sample type. Options available are below. Can only choose one option.
 \describe{
 \item{"all"}{All possible sampling events.}
 \item{"VS"}{Default. GLKN Vital Signs monitoring events, which matches all non-QAQC Activity_Types.}
@@ -98,32 +100,42 @@ If there are multiple surface samples for a given site, date, parameter, the med
 using the Lower/Upper Quantification Limits values. Censored values are indicated by censored = TRUE, and
 are defined as records where the Result_Detection_Condition = Present Above/Below Quantification Limit.
 If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
-are returned in the value column.}
+are returned in the value column. Censored values will be plotted as a star compared with filled circles
+for non-censored values.}
 
 \item{layers}{Options are "points" and "lines". By default, both will plot.}
+
+\item{point_size}{If specified, will change the size of the points from ggplot default}
+
+\item{line_size}{If specified, will change the size of the line from ggplot default}
 
 \item{palette}{Theme to plot points and lines. Options include 'viridis' (Default- ranges of blue,
 green and yellow), magma (yellow, red, purple), plasma (brighter version of magma), turbo (rainbow),
 or specify a vector of colors manually. If fewer colors than parameters are specified, they will be
-ramped to generate enough colors.}
+color-ramped to generate enough colors.}
+
+\item{smooth}{Logical. If TRUE (Default), will plot a loess smoothed line. If FALSE, will plot actual line. Only
+plots if layers argument includes 'lines'.}
 
 \item{span}{Numeric. Determines how smoothed the line will be for smooth = TRUE. Default is 0.3. Higher spans (up to 1)
-cause more smoothing. Span can range from 0 to 1.}
+cause more smoothing, with 1 being a straight line. Span can range from 0 to 1.}
+
+\item{facet_site}{Logical. If TRUE (default), will facet on site if multiple sites specified. If FALSE, will plot all sites
+on the same figure. Only enabled when multiple sites specified.}
+
+\item{facet_scales}{Specify whether facet axes should be fixed (all the same; default) or "free_y", "free_x" or "free" (both).}
 
 \item{legend_position}{Specify location of legend. To turn legend off, use legend_position = "none" (Default). Other
 options are "top", "bottom", "left", "right".}
 
-\item{numcol}{Specify number of columns in the facet wrap, which is only enabled when either multiple years
-are specified or multiple parks. Default is 2.}
+\item{numcol}{Specify number of columns in the facet wrap, which is only enabled when either multiple sites are
+specified or multiple parks. Default is 2.}
 
 \item{gridlines}{Specify whether to add gridlines or not. Options are c("none" (Default), "grid_y", "grid_x", "both")}
 
 \item{threshold}{Logical. If TRUE (Default), will plot a dashed (upper) or dotted (lower) line if a water
 quality threshold exists for that parameter and site. If FALSE, no threshold line will be plotted.
 *NOT CURRENTLY ENABLED*}
-
-\item{smooth}{Logical. If TRUE (Default), will plot a loess smoothed line. If FALSE, will plot actual line. Only
-plots if layers argument includes 'lines'.}
 }
 \value{
 Returns a ggplot object of specified parameter trends.
@@ -140,28 +152,32 @@ instead of an empty plot.
 
 #++++ UPDATE FOR GLKN ++++
 # Plot smoothed surface pH for ISRO_01 for all years
-plotTrend(site = "ISRO_01", parameter = "pH", palette = 'red')
+plotTrend(site = "ISRO_01", parameter = "pH")
 
-# Plot smoothed surface pH for Eagle Lake for all years, removing the legend and using span of 0.75.
-plotTrend(site = "ACEAGL", parameter = "pH", span = 0.75)
+# Plot smoothed surface pH for ISRO_01 for all years, removing the legend and using span of 0.75.
+plotTrend(site = "ISRO_01", parameter = "pH", span = 0.75)
 
-# Plot smoothed Secchi Depth in Jordan Pond for all years, including the legend,
-# different color palette, and using span of 0.75.
-plotTrend(site = "ACJORD", parameter = "SDepth_m", span = 0.75, palette = 'Set1')
+# Plot smoothed surface ChlA for VOYA_01 for all years including censored values, with palette and larger points/lines.
+plotTrend(site = "VOYA_01", parameter = "ChlA_ugL", include_censored = TRUE,
+  palette = 'navyblue', point_size = 3, line_size = 1.5)
 
-# Plot smoothed surface pH for active SARA streams over all years with 0.6 span.
-plotTrend(park = "SARA", site = c("SARASA", "SARASC", "SARASD"), site_type = "stream",
-          parameter = "pH", legend_position = "right", span = 0.6)
+# Plot non-smoothed DO in SLBE for all years, including the legend,
+# different color palette, all sites on the same figure.
+plotTrend(park = "SLBE", parameter = "DO_mgL", smooth = F, layers = c('points', 'lines'),
+  palette = c("blue", "green", "gold"), point_size = 3, legend_position = 'bottom', facet_site = F)
 
-# Plot smoothed surface SO4 for all MIMA streams over all years with 0.6 span
-plotTrend(park = "MIMA", site_type = "stream",
-          parameter = "SO4_ueqL", legend_position = "right", span = 0.6)
+# Plot smoothed surface SO4 for all VOYA sites all years, including censored, with 0.6 span
+plotTrend(park = "VOYA", parameter = "SO4_mgL", include_censored = T, legend_position = "right",
+  span = 0.6, point_size = 2.5)
 
-# Plot non-smoothed surface of multiple Sonde parameters for all MIMA streams over all
+# Plot smoothed surface of multiple Sonde parameters for all PIRO sites over all
 # years with 0.6 span.
-params <- c("Temp_F", "SpCond_uScm", "DOsat_pct", "pH")
-plotTrend(park = "MIMA", site_type = "stream",
-          parameter = params, legend_position = "right", span = 0.6)
+params <- c("TempWater_C", "SpecCond_uScm", "DOsat_pct", "pH")
+plotTrend(park = "PIRO",  facet_site = F,
+          parameter = params, legend_position = "right", span = 0.6, palette = 'turbo')
+
+# Plot all \%DO values from ISRO_04, including samples below the surface
+plotTrend(site = "ISRO_04", sample_depth = "all", parameter = "DOsat_pct")
 
 }
 

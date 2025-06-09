@@ -16,7 +16,6 @@
 #' \describe{
 #' \item{"all"}{Includes all parks in the network}
 #' \item{"APIS"}{Apostle Islands National Lakeshore}
-#' \item{"GRPO"}{Grand Portage National Monument}
 #' \item{"INDU"}{Indiana Dunes National Park}
 #' \item{"ISRO"}{Isle Royale National Park}
 #' \item{"MISS"}{Mississippi National River and Recreation Area}
@@ -51,7 +50,7 @@
 #'  \item{"impound"}{Location_types taht = "River Impoundment"}
 #'  }
 #'
-#' @param sample_type Select the sample type. Options available are below Can only choose one option.
+#' @param sample_type Select the sample type. Options available are below. Can only choose one option.
 #' \describe{
 #' \item{"all"}{All possible sampling events.}
 #' \item{"VS"}{Default. GLKN Vital Signs monitoring events, which matches all non-QAQC Activity_Types.}
@@ -75,22 +74,27 @@
 #'       "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
 #'       "WaveHt_cm", "WaveHt_m", "WindDir_Deg").
 #'
-#' @param include_censored Logical. If TRUE, the value column includes non-censored and censored values
-#' using the Lower/Upper Quantification Limits values. Censored values are indicated by censored = TRUE, and
-#' are defined as records where the Result_Detection_Condition = Present Above/Below Quantification Limit.
-#' If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
-#' are returned in the value column.
-#'
 #' @param sample_depth Filter on sample depth. If "all" (Default), returns all sample depths. If "surface",
 #' only returns records that are either blank or "Surface" in the Activity_Relative_Depth column of the Results view.
 #' If there are multiple surface samples for a given site, date, parameter, the median value will be used.
 #'
+#' @param include_censored Logical. If TRUE, the value column includes non-censored and censored values
+#' using the Lower/Upper Quantification Limits values. Censored values are indicated by censored = TRUE, and
+#' are defined as records where the Result_Detection_Condition = Present Above/Below Quantification Limit.
+#' If FALSE (Default), only values with Result_Detection_Condition = "Detected and Quantified"
+#' are returned in the value column. Censored values will be plotted as a star compared with filled circles
+#' for non-censored values.
+#'
 #' @param layers Options are "points" and "lines". By default, both will plot.
+#'
+#' @param point_size If specified, will change the size of the points from ggplot default
+#'
+#' @param line_size If specified, will change the size of the line from ggplot default
 #'
 #' @param palette Theme to plot points and lines. Options include 'viridis' (Default- ranges of blue,
 #' green and yellow), magma (yellow, red, purple), plasma (brighter version of magma), turbo (rainbow),
 #' or specify a vector of colors manually. If fewer colors than parameters are specified, they will be
-#' ramped to generate enough colors.
+#' color-ramped to generate enough colors.
 #'
 #' @param threshold Logical. If TRUE (Default), will plot a dashed (upper) or dotted (lower) line if a water
 #' quality threshold exists for that parameter and site. If FALSE, no threshold line will be plotted.
@@ -100,13 +104,18 @@
 #' plots if layers argument includes 'lines'.
 #'
 #' @param span Numeric. Determines how smoothed the line will be for smooth = TRUE. Default is 0.3. Higher spans (up to 1)
-#' cause more smoothing. Span can range from 0 to 1.
+#' cause more smoothing, with 1 being a straight line. Span can range from 0 to 1.
+#'
+#' @param facet_site Logical. If TRUE (default), will facet on site if multiple sites specified. If FALSE, will plot all sites
+#' on the same figure. Only enabled when multiple sites specified.
+#'
+#' @param facet_scales Specify whether facet axes should be fixed (all the same; default) or "free_y", "free_x" or "free" (both).
 #'
 #' @param legend_position Specify location of legend. To turn legend off, use legend_position = "none" (Default). Other
 #' options are "top", "bottom", "left", "right".
 #'
-#' @param numcol Specify number of columns in the facet wrap, which is only enabled when either multiple years
-#' are specified or multiple parks. Default is 2.
+#' @param numcol Specify number of columns in the facet wrap, which is only enabled when either multiple sites are
+#'  specified or multiple parks. Default is 2.
 #'
 #' @param gridlines Specify whether to add gridlines or not. Options are c("none" (Default), "grid_y", "grid_x", "both")
 #'
@@ -115,28 +124,32 @@
 #'
 #' #++++ UPDATE FOR GLKN ++++
 #' # Plot smoothed surface pH for ISRO_01 for all years
-#' plotTrend(site = "ISRO_01", parameter = "pH", palette = 'red')
+#' plotTrend(site = "ISRO_01", parameter = "pH")
 #'
-#' # Plot smoothed surface pH for Eagle Lake for all years, removing the legend and using span of 0.75.
-#' plotTrend(site = "ACEAGL", parameter = "pH", span = 0.75)
+#' # Plot smoothed surface pH for ISRO_01 for all years, removing the legend and using span of 0.75.
+#' plotTrend(site = "ISRO_01", parameter = "pH", span = 0.75)
 #'
-#' # Plot smoothed Secchi Depth in Jordan Pond for all years, including the legend,
-#' # different color palette, and using span of 0.75.
-#' plotTrend(site = "ACJORD", parameter = "SDepth_m", span = 0.75, palette = 'Set1')
+#' # Plot smoothed surface ChlA for VOYA_01 for all years including censored values, with palette and larger points/lines.
+#' plotTrend(site = "VOYA_01", parameter = "ChlA_ugL", include_censored = TRUE,
+#'   palette = 'navyblue', point_size = 3, line_size = 1.5)
 #'
-#' # Plot smoothed surface pH for active SARA streams over all years with 0.6 span.
-#' plotTrend(park = "SARA", site = c("SARASA", "SARASC", "SARASD"), site_type = "stream",
-#'           parameter = "pH", legend_position = "right", span = 0.6)
+#' # Plot non-smoothed DO in SLBE for all years, including the legend,
+#' # different color palette, all sites on the same figure.
+#' plotTrend(park = "SLBE", parameter = "DO_mgL", smooth = F, layers = c('points', 'lines'),
+#'   palette = c("blue", "green", "gold"), point_size = 3, legend_position = 'bottom', facet_site = F)
 #'
-#' # Plot smoothed surface SO4 for all MIMA streams over all years with 0.6 span
-#' plotTrend(park = "MIMA", site_type = "stream",
-#'           parameter = "SO4_ueqL", legend_position = "right", span = 0.6)
+#' # Plot smoothed surface SO4 for all VOYA sites all years, including censored, with 0.6 span
+#' plotTrend(park = "VOYA", parameter = "SO4_mgL", include_censored = T, legend_position = "right",
+#'   span = 0.6, point_size = 2.5)
 #'
-#' # Plot non-smoothed surface of multiple Sonde parameters for all MIMA streams over all
+#' # Plot smoothed surface of multiple Sonde parameters for all PIRO sites over all
 #' # years with 0.6 span.
-#' params <- c("Temp_F", "SpCond_uScm", "DOsat_pct", "pH")
-#' plotTrend(park = "MIMA", site_type = "stream",
-#'           parameter = params, legend_position = "right", span = 0.6)
+#' params <- c("TempWater_C", "SpecCond_uScm", "DOsat_pct", "pH")
+#' plotTrend(park = "PIRO",  facet_site = F,
+#'           parameter = params, legend_position = "right", span = 0.6, palette = 'turbo')
+#'
+#' # Plot all %DO values from ISRO_04, including samples below the surface
+#' plotTrend(site = "ISRO_04", sample_depth = "all", parameter = "DOsat_pct")
 #'
 #'}
 #'
@@ -155,7 +168,10 @@ plotTrend <- function(park = "all",
                       sample_depth = "surface",
                       include_censored = FALSE,
                       layers = c("points", "lines"),
-                      palette = "viridis",
+                      point_size = 1,
+                      line_size = 1,
+                      palette = "viridis", #threshold = FALSE,
+                      smooth = TRUE,
                       span = 0.3,
                       facet_site = TRUE,
                       facet_scales = "free_y",
@@ -195,7 +211,9 @@ plotTrend <- function(park = "all",
   sample_depth <- match.arg(sample_depth, c("all", "surface"))
   stopifnot(class(include_censored) == "logical")
   layers <- match.arg(layers, c("points", "lines"), several.ok = TRUE)
-  stopifnot(class(span) %in% "numeric")
+  # stopifnot(class(threshold) == "logical")
+  stopifnot(class(smooth) == 'logical')
+  stopifnot(class(span) == "numeric")
   stopifnot(class(facet_site) == "logical")
   facet_scales <- match.arg(facet_scales, c("fixed", "free_y", "free_x", "free"))
   legend_position <- match.arg(legend_position, c("none", "bottom", "top", "right", "left"))
@@ -209,13 +227,16 @@ plotTrend <- function(park = "all",
               "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
               "WaveHt_cm", "WaveHt_m", "WindDir_Deg")
 
+  typo <- parameters[(!parameters %in% params)]
+
   if(any(!parameters %in% params)){
-    stop("At least one specified parameter is not an accepted value.")}
+    stop(paste0("The following parameters are not accepted values: ", paste0(typo, collapse = ","), "\n"),
+         "Accepted values: ", paste0(params, collapse = ", "))}
 
   wdat <-
     getResults(park = park, site = site, site_type = site_type, sample_type = "VS", years = years,
-               months = months, active = active, parameter = parameters[1], sample_depth = sample_depth,
-               include_censored = FALSE) |>
+               months = months, active = active, parameter = parameters, sample_depth = sample_depth,
+               include_censored = include_censored) |>
     group_by(Location_ID, year, month, sample_date, doy, Activity_Relative_Depth, param_name, censored) |>
     summarize(value = median(value, na.rm = T), .groups = 'drop')
   # Drop NAs (often from params that only have censored data and censored = F)
@@ -232,9 +253,7 @@ plotTrend <- function(park = "all",
 
   #-- Set up plotting features --
   ylabel <- ifelse(length(unique(wdat$param_label)) == 1, unique(wdat$param_label), "Value")
-  wdat_cens <- wdat |> filter(censored == TRUE)
-
-  head(wdat)
+  #wdat_cens <- wdat |> filter(censored == TRUE)
 
   wdat$sample_date <- as.Date(wdat$sample_date, format = c("%Y-%m-%d"))
 
@@ -253,6 +272,7 @@ plotTrend <- function(park = "all",
   wdat$mon <- wdat$mon[,drop = T]
 
   # Expand year and months to include missed periods that make x-axis funky
+  #data_years <- range(wdat$year)
   time_mat1 <- expand.grid(year = years, month = months) |> arrange(year, month)
   time_mat1$mon <- factor(time_mat1$month, levels = time_mat1$month, labels = month.abb[time_mat1$month], ordered = TRUE)
   time_mat1$mon <- time_mat1$mon[,drop = T]
@@ -261,7 +281,9 @@ plotTrend <- function(park = "all",
   time_mat1$doy_norm <- (time_mat1$doy - 122)/(305-122)
   time_mat1$x_axis <- time_mat1$year - years[1] + time_mat1$doy_norm
 
-  time_mat <- time_mat1 |> filter(date <= max(wdat$sample_date)) # drop dates not included in wdat2
+  time_mat <- time_mat1 |>
+    filter(date <= max(wdat$sample_date)) |>
+    filter(date >= min(wdat$sample_date))# drop dates not included in wdat
   time_mat$x_label <- if(year_len == 1){as.character(paste0(time_mat$mon, "-01"))
     } else if(year_len %in% c(2, 3, 4)){paste0(time_mat$mon, "-", time_mat$year)
     } else {(time_mat$year)}
@@ -277,11 +299,10 @@ plotTrend <- function(park = "all",
 
   vir_pal = ifelse(palette %in%
                      c("viridis", "magma", "plasma", "turbo", "mako", "rocket", "cividis", "inferno"),
-                   "viridis", "colbrew")
+                       "viridis", "colbrew")
+  # set up facets
+  facet_param <- if(length(unique(parameters)) > 1){TRUE} else {FALSE}
 
-  vir_pal = ifelse(palette %in%
-                     c("viridis", "magma", "plasma", "turbo", "mako", "rocket", "cividis", "inferno"),
-                   "viridis", "colbrew")
 
   pal <-
     if(any(vir_pal == "colbrew")){
@@ -291,57 +312,93 @@ plotTrend <- function(park = "all",
 
   #-- Create plot --
   trendplot <-
-    ggplot(wdat, aes(x = x_axis, y = value, group = {if(smooth == TRUE){Location_ID} else {year}},
-                      color = Location_ID, fill = Location_ID)) +
-    #layers
-    {if(smooth == TRUE) geom_smooth(aes(text = paste0("Site: ", Location_ID, "<br>")),
-                                    method = 'loess', formula = 'y ~ x', se = F, span = span) } +
-    {if(smooth == FALSE & any(layers %in% "lines")) geom_line(aes(text = paste0("Site: ", Location_ID, "<br>")))} +
-    {if(any(layers %in% "points") & include_censored == TRUE){
-      geom_point(aes(text = paste0("Site: ", Location_ID, "<br>",
-                                   "Parameter: ", param_label, "<br>",
-                                   "Value: ", round(value, 1), "<br>"),
-                     shape = censored),
-                 alpha = 0.4, size = 2.5)}} +
-    {if(any(layers %in% "points") & include_censored == TRUE){
-      scale_shape_manual(values = c(16, 8), name = "Censored Values")}} +
-    {if(any(layers %in% "points") & include_censored == FALSE){
-      geom_point(aes(text = paste0("Site: ", Location_ID, "<br>",
-                                   "Parameter: ", param_label, "<br>",
-                                   "Value: ", round(value, 1), "<br>")),
-                 alpha = 0.4, size = 2.5, shape = 16)}} +
-    # {if(threshold == TRUE){geom_hline(aes(yintercept = UpperThreshold, linetype = "Upper WQ Threshold"), lwd = 0.7)}} +
-    # {if(threshold == TRUE){geom_hline(aes(yintercept = LowerThreshold, linetype = "Lower WQ Threshold"), lwd = 0.7)}} +
-    # {if(threshold == TRUE){scale_linetype_manual(values = c("dashed", "solid"))}} +
-    # facets
-    {if(length(unique(wdat$param_label))>1) facet_wrap(~param_label, scales = 'free_y', ncol = numcol)} +
-    # themes
-    theme_WQ() +
-    theme(legend.position = legend_position,
-          legend.title = element_blank(),
-          axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
-    {if(any(gridlines %in% c("grid_y", "both"))){
-      theme(panel.grid.major.y = element_line(color = 'grey'))}} + #,
-    #panel.grid.minor.y = element_line(color = 'grey'))}}+
-    {if(any(gridlines %in% c("grid_x", "both"))){
-      theme(panel.grid.major.x = element_line(color = 'grey'))}} + #,
-    #panel.grid.minor.x = element_line(color = 'grey'))}}+
-    # color palettes
-    {if(any(vir_pal == "viridis")) scale_color_viridis_d(option = palette)} +
-    {if(any(vir_pal == "viridis")) scale_fill_viridis_d(option = palette)} +
-    {if(any(vir_pal == "colbrew")) scale_fill_manual(values = pal)} +
-    {if(any(vir_pal == "colbrew")) scale_color_manual(values = pal)} +
-    #axis format
-    scale_x_continuous(breaks = xbreaks,
-                       labels = xlabs,
-                       limits = c(0, max(wdat$x_axis))) +
-    scale_y_continuous(n.breaks = 8) +
-    # labels
-    #labs(x = "Year", y = ylab) +
-    labs(x = NULL, y = ylabel) +
-    guides(fill = guide_legend(order = 1),
-           color = guide_legend(order = 1),
-           shape = guide_legend(order = 1))
+    if(include_censored == TRUE){
+      ggplot(wdat, aes(x = x_axis, y = value, group = Location_ID, #if(smooth == TRUE){Location_ID} else{year},
+                       color = Location_ID, fill = Location_ID)) +
+        # layers*
+        {if(smooth == TRUE) geom_smooth(method = 'loess', formula = 'y ~ x', se = F, span = span, linewidth = line_size) } +
+        {if(smooth == FALSE & any(layers %in% "lines")) geom_line(linewidth = line_size)} +
+        {if(any(layers %in% "points")) geom_point(aes(shape = censored), alpha = 0.4, size = point_size)} +
+        {if(any(layers %in% "points"))
+          scale_shape_manual(values = c(19, 8), labels = c("Real", "Censored"), name = "Legend")} +
+        # {if(any(layers %in% "points"))
+        #   scale_size_manual(values = c(3,3.5), labels = c("Real", "Censored"), name = "legend")} +
+        # {if(threshold == TRUE){geom_hline(aes(yintercept = UpperThreshold, linetype = "Upper WQ Threshold"), lwd = 0.7)}} +
+        # {if(threshold == TRUE){geom_hline(aes(yintercept = LowerThreshold, linetype = "Lower WQ Threshold"), lwd = 0.7)}} +
+        # {if(threshold == TRUE){scale_linetype_manual(values = c("dotted", "dashed"))}} +
+        # facets
+        {if(facet_site == TRUE & facet_param == FALSE){facet_wrap(~Location_ID, scales = facet_scales, ncol = numcol)}} +
+        {if(facet_site == FALSE & facet_param == TRUE){facet_wrap(~param_label, scales = 'free_y', ncol = numcol)}} +
+        {if(facet_site == TRUE & facet_param == TRUE){facet_wrap(~Location_ID + param_label, scales = 'free_y', ncol = numcol)}} +
+        # themes
+        theme_WQ() +
+        theme(legend.position = legend_position,
+              legend.title = element_blank(),
+              axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+        {if(any(gridlines %in% c("grid_y", "both"))){
+          theme(panel.grid.major.y = element_line(color = 'grey'))}} + #,
+        #panel.grid.minor.y = element_line(color = 'grey'))}}+
+        {if(any(gridlines %in% c("grid_x", "both"))){
+          theme(panel.grid.major.x = element_line(color = 'grey'))}} + #,
+        #panel.grid.minor.x = element_line(color = 'grey'))}}+
+        # palettes
+        {if(any(vir_pal == "viridis")) scale_color_viridis_d(option = palette)} +
+        {if(any(vir_pal == "viridis")) scale_fill_viridis_d(option = palette)} +
+        {if(any(vir_pal == "colbrew")) scale_fill_manual(values = pal)} +
+        {if(any(vir_pal == "colbrew")) scale_color_manual(values = pal)} +
+        #axis format
+        scale_x_continuous(breaks = xbreaks,
+                           labels = xlabs,
+                           limits = c(min(wdat$x_axis), max(wdat$x_axis))) +
+        scale_y_continuous(n.breaks = 8) +
+        # labels
+        #labs(x = "Year", y = ylab) +
+        labs(x = NULL, y = ylabel) +
+        guides(fill = guide_legend(order = 1),
+               color = guide_legend(order = 1),
+               shape = guide_legend(order = 1))
+    } else {
+      ggplot(wdat, aes(x = x_axis, y = value, group = Location_ID, #if(smooth == TRUE){Location_ID} else{year},
+                        color = Location_ID, fill = Location_ID)) +
+        #layers
+        {if(smooth == TRUE) geom_smooth(method = 'loess', formula = 'y ~ x', se = F, span = span, linewidth = line_size) } +
+        {if(smooth == FALSE & any(layers %in% "lines")) geom_line(linewidth = line_size)} +
+        {if(any(layers %in% "points")) geom_point(alpha = 0.4, size = point_size)} +
+        # {if(threshold == TRUE){geom_hline(aes(yintercept = UpperThreshold, linetype = "Upper WQ Threshold"), lwd = 0.7)}} +
+        # {if(threshold == TRUE){geom_hline(aes(yintercept = LowerThreshold, linetype = "Lower WQ Threshold"), lwd = 0.7)}} +
+        # {if(threshold == TRUE){scale_linetype_manual(values = c("dashed", "solid"))}} +
+        # facets
+        {if(facet_site == TRUE & facet_param == FALSE){facet_wrap(~Location_ID, scales = facet_scales, ncol = numcol)}} +
+        {if(facet_site == FALSE & facet_param == TRUE){facet_wrap(~param_label, scales = 'free_y', ncol = numcol)}} +
+        {if(facet_site == TRUE & facet_param == TRUE){facet_wrap(~Location_ID + param_label, scales = 'free_y', ncol = numcol)}} +
+        # themes
+        theme_WQ() +
+        theme(legend.position = legend_position,
+              legend.title = element_blank(),
+              axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+        {if(any(gridlines %in% c("grid_y", "both"))){
+          theme(panel.grid.major.y = element_line(color = 'grey'))}} + #,
+        #panel.grid.minor.y = element_line(color = 'grey'))}}+
+        {if(any(gridlines %in% c("grid_x", "both"))){
+          theme(panel.grid.major.x = element_line(color = 'grey'))}} + #,
+        #panel.grid.minor.x = element_line(color = 'grey'))}}+
+        # color palettes
+        {if(any(vir_pal == "viridis")) scale_color_viridis_d(option = palette)} +
+        {if(any(vir_pal == "viridis")) scale_fill_viridis_d(option = palette)} +
+        {if(any(vir_pal == "colbrew")) scale_fill_manual(values = pal)} +
+        {if(any(vir_pal == "colbrew")) scale_color_manual(values = pal)} +
+        #axis format
+        scale_x_continuous(breaks = xbreaks,
+                           labels = xlabs,
+                           limits = c(min(wdat$x_axis), max(wdat$x_axis))) +
+        scale_y_continuous(n.breaks = 8) +
+        # labels
+        #labs(x = "Year", y = ylab) +
+        labs(x = NULL, y = ylabel) +
+        guides(fill = guide_legend(order = 1),
+               color = guide_legend(order = 1),
+               shape = guide_legend(order = 1))
+    }
 
   suppressWarnings(trendplot)
 
