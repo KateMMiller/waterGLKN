@@ -12,7 +12,7 @@ plotTrend(
   years = 2007:format(Sys.Date(), "\%Y"),
   months = 4:11,
   active = TRUE,
-  parameters = NA,
+  parameter = NA,
   sample_depth = "surface",
   include_censored = FALSE,
   layers = c("points", "lines"),
@@ -84,13 +84,12 @@ events are between months 4 and 11, and these are set as the defaults.}
 locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
 least one sampling event between 2014 and 2024. See "./scripts/active_sites.R" for more details.}
 
-\item{parameters}{Specify the two parameters to plot. The first parameter will be treated as the response (y).
-The second parameter will be treated as the explanatory (x) variable. Current accepted values are:
-    c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ugL", "Cl_mgL", "Depth_m",
-      "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL",
-      "Na_mgL", "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "Secchi_m", "Si_mgL", "SO4_mgL", "SpecCond_uScm",
-      "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
-      "WaveHt_cm", "WaveHt_m", "WindDir_Deg").}
+\item{parameter}{Specify one or more parameters to plot. Current accepted values are:
+c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ugL", "Cl_mgL", "Depth_m",
+  "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL",
+  "Na_mgL", "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "Secchi_m", "Si_mgL", "SO4_mgL", "SpecCond_uScm",
+  "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
+  "WaveHt_cm", "WaveHt_m", "WindDir_Deg").}
 
 \item{sample_depth}{Filter on sample depth. If "all" (Default), returns all sample depths. If "surface",
 only returns records that are either blank or "Surface" in the Activity_Relative_Depth column of the Results view.
@@ -150,7 +149,6 @@ instead of an empty plot.
 \examples{
 \dontrun{
 
-#++++ UPDATE FOR GLKN ++++
 # Plot smoothed surface pH for ISRO_01 for all years
 plotTrend(site = "ISRO_01", parameter = "pH")
 

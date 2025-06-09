@@ -111,7 +111,7 @@ importData(type = 'zip', filepath = c(river_zip, lake_zip))
 res <- getResults()
 
 # include censored samples
-resC <- getResults(include_cenored = T)
+resC <- getResults(include_censored = T)
 
 # return samples from 2024 only
 res24 <- getResults(years = 2024)

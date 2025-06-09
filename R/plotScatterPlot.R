@@ -151,7 +151,7 @@ plotScatterPlot <- function(park = "all",
 
   #--- Error handling ---
   park <- match.arg(park, several.ok = TRUE,
-                    c("all", "APIS", "GRPO", "INDU", "ISRO", "PIRO", "SACN", "SLBE", "VOYA"))
+                    c("all", "APIS", "INDU", "ISRO", "PIRO", "SACN", "SLBE", "VOYA"))
 
   Rivers <- c('MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
               'SACN_CLAM_0.7', 'SACN_KINI_2.2', 'SACN_NAKA_4.8', 'SACN_NAKA_41.3', 'SACN_NAKA_74.5', 'SACN_NAKA_84.6',
@@ -186,16 +186,19 @@ plotScatterPlot <- function(park = "all",
   stopifnot(class(numcol) %in% c("numeric", "integer"))
   gridlines <- match.arg(gridlines, c("none", "grid_y", "grid_x", "both"))
 
-  #-- Compile data for plotting --
   params <- c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ugL", "Cl_mgL", "Depth_m",
               "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL",
               "Na_mgL", "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "Secchi_m", "Si_mgL", "SO4_mgL", "SpecCond_uScm",
               "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
               "WaveHt_cm", "WaveHt_m", "WindDir_Deg")
 
-  if(any(!parameters %in% params)){
-    stop("At least one specified parameter is not an accepted value.")}
+  typo <- parameters[(!parameters %in% params)]
 
+  if(any(!parameters %in% params)){
+    stop(paste0("The following parameters are not accepted values: ", paste0(typo, collapse = ","), "\n"),
+         "Accepted values: ", paste0(params, collapse = ", "))}
+
+  #-- Compile data for plotting --
   wdat_p1 <-
     getResults(park = park, site = site, site_type = site_type, sample_type = "VS", years = years,
                months = months, active = active, parameter = parameters[1], sample_depth = sample_depth,

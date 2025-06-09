@@ -66,8 +66,7 @@
 #' locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
 #' least one sampling event between 2014 and 2024. See "./scripts/active_sites.R" for more details.
 #'
-#' @param parameters Specify the two parameters to plot. The first parameter will be treated as the response (y).
-#' The second parameter will be treated as the explanatory (x) variable. Current accepted values are:
+#' @param parameter Specify one or more parameters to plot. Current accepted values are:
 #'     c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ugL", "Cl_mgL", "Depth_m",
 #'       "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL",
 #'       "Na_mgL", "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "Secchi_m", "Si_mgL", "SO4_mgL", "SpecCond_uScm",
@@ -122,7 +121,6 @@
 #' @examples
 #' \dontrun{
 #'
-#' #++++ UPDATE FOR GLKN ++++
 #' # Plot smoothed surface pH for ISRO_01 for all years
 #' plotTrend(site = "ISRO_01", parameter = "pH")
 #'
@@ -164,7 +162,7 @@ plotTrend <- function(park = "all",
                       years = 2007:format(Sys.Date(), "%Y"),
                       months = 4:11,
                       active = TRUE,
-                      parameters = NA,
+                      parameter = NA,
                       sample_depth = "surface",
                       include_censored = FALSE,
                       layers = c("points", "lines"),
@@ -184,7 +182,7 @@ plotTrend <- function(park = "all",
 
   #-- Error handling --
   park <- match.arg(park, several.ok = TRUE,
-                    c("all", "APIS", "GRPO", "INDU", "ISRO", "PIRO", "SACN", "SLBE", "VOYA"))
+                    c("all", "APIS", "INDU", "ISRO", "PIRO", "SACN", "SLBE", "VOYA"))
 
   Rivers <- c('MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
               'SACN_CLAM_0.7', 'SACN_KINI_2.2', 'SACN_NAKA_4.8', 'SACN_NAKA_41.3', 'SACN_NAKA_74.5', 'SACN_NAKA_84.6',
@@ -220,19 +218,19 @@ plotTrend <- function(park = "all",
   stopifnot(class(numcol) %in% c("numeric", "integer"))
   gridlines <- match.arg(gridlines, c("none", "grid_y", "grid_x", "both"))
 
-  #-- Compile data for plotting --
   params <- c("Alkalinity_mgL", "Ca_mgL", "ChlA_mgm3", "ChlA_Pheo_pct", "ChlA_ugL", "Cl_mgL", "Depth_m",
               "DO_mgL", "DOC_mgL", "DOsat_pct", "Hg_ngL", "HgMethyl_ngL", "K_mgL", "Mg_mgL", "N_ugL",
               "Na_mgL", "NH4_ugL", "NO2+NO3_ugL", "P_ugL", "pH", "Secchi_m", "Si_mgL", "SO4_mgL", "SpecCond_uScm",
               "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
               "WaveHt_cm", "WaveHt_m", "WindDir_Deg")
 
-  typo <- parameters[(!parameters %in% params)]
+  typo <- parameter[(!parameter %in% params)]
 
-  if(any(!parameters %in% params)){
+  if(any(!parameter %in% params)){
     stop(paste0("The following parameters are not accepted values: ", paste0(typo, collapse = ","), "\n"),
          "Accepted values: ", paste0(params, collapse = ", "))}
 
+  #-- Compile data for plotting --
   wdat <-
     getResults(park = park, site = site, site_type = site_type, sample_type = "VS", years = years,
                months = months, active = active, parameter = parameters, sample_depth = sample_depth,
@@ -301,12 +299,12 @@ plotTrend <- function(park = "all",
                      c("viridis", "magma", "plasma", "turbo", "mako", "rocket", "cividis", "inferno"),
                        "viridis", "colbrew")
   # set up facets
-  facet_param <- if(length(unique(parameters)) > 1){TRUE} else {FALSE}
+  facet_param <- if(length(unique(parameter)) > 1){TRUE} else {FALSE}
 
 
   pal <-
     if(any(vir_pal == "colbrew")){
-      colorRampPalette(palette)(length(parameters) * length(unique(wdat$Location_ID)))
+      colorRampPalette(palette)(length(parameter) * length(unique(wdat$Location_ID)))
       #rep(colorRampPalette(palette)(length(unique(parameter))), times = length(parameter) * length(unique(wdat2$SiteCode)))
     }
 
