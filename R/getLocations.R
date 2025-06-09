@@ -74,8 +74,8 @@ getLocations <- function(park = 'all', site = 'all', site_type = 'all', active =
 
   #---- error handling ----
   park <- match.arg(park, several.ok = TRUE,
-                    c("all", "APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA"))
-  if(any(park == "all")){park = c("APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA")} else {park}
+                    c("all", "APIS", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA"))
+  if(any(park == "all")){park = c("APIS", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA")} else {park}
 
   site_type <- match.arg(site_type, several.ok = TRUE, c("all", "impound", "lake", "river"))
 

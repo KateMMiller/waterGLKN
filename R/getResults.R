@@ -94,7 +94,7 @@
 #' res <- getResults()
 #'
 #' # include censored samples
-#' resC <- getResults(include_cenored = T)
+#' resC <- getResults(include_censored = T)
 #'
 #' # return samples from 2024 only
 #' res24 <- getResults(years = 2024)
@@ -118,7 +118,7 @@ getResults <- function(park = "all", site = "all", site_type = "all",
   #---- Error handling ----
   park <- match.arg(park, several.ok = TRUE,
                     c("all", "APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA"))
-  if(any(park == "all")){park = c("APIS", "GRPO", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA")} else {park}
+  if(any(park == "all")){park = c("APIS", "INDU", "ISRO", "MISS", "PIRO", "SLBE", "SACN", "VOYA")} else {park}
 
   site_type <- match.arg(site_type, several.ok = TRUE, c("all", "impound", "lake", "river"))
 
