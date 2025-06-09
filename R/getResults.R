@@ -10,7 +10,6 @@
 #'  \describe{
 #'  \item{"all"}{Includes all parks in the network}
 #'  \item{"APIS"}{Apostle Islands National Lakeshore}
-#'  \item{"GRPO"}{Grand Portage National Monument}
 #'  \item{"INDU"}{Indiana Dunes National Park}
 #'  \item{"ISRO"}{Isle Royale National Park}
 #'  \item{"MISS"}{Mississippi National River and Recreation Area}
