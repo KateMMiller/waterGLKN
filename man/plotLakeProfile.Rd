@@ -34,7 +34,8 @@ plotLakeProfile(
 }}
 
 \item{site}{Filter on Location_ID. Easiest way to pick a site. Defaults to "all" lake or riverine impounded sites.
-Accepted sites are below. If new sites are added, need to be added to this function as an accepted site.
+Accepted sites are below. If new sites are added, need to be added to this function as an accepted site. When
+multiple sites are specified, they will be faceted in the order specified.
 
 Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU_05',
           'ISRO_01', 'ISRO_02', 'ISRO_03', 'ISRO_04', 'ISRO_05', 'ISRO_06', 'ISRO_07', 'ISRO_08', 'ISRO_09',

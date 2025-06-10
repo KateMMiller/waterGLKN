@@ -29,7 +29,8 @@
 #'}
 #'
 #' @param site Filter on Location_ID. Easiest way to pick a site. Defaults to "all" lake or riverine impounded sites.
-#' Accepted sites are below. If new sites are added, need to be added to this function as an accepted site.
+#' Accepted sites are below. If new sites are added, need to be added to this function as an accepted site. When
+#' multiple sites are specified, they will be faceted in the order specified.
 #'
 #' Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU_05',
 #'           'ISRO_01', 'ISRO_02', 'ISRO_03', 'ISRO_04', 'ISRO_05', 'ISRO_06', 'ISRO_07', 'ISRO_08', 'ISRO_09',
@@ -220,15 +221,15 @@ plotLakeProfile <- function(park = 'all',
   prof_width2$park <- substr(prof_width2$Location_ID, 1, 4)
 
   prof_width2$first_day <- NA_integer_
-  prof_width2$first_day[prof_width2$park %in% c("APIS", "ISRO", "PIRO", "SLBE", "VOYA")] <- 152 # June 1
-  prof_width2$first_day[prof_width2$park %in% c("INDU")] <- 91 # April 1
+  prof_width2$first_day[prof_width2$park %in% c("APIS", "ISRO", "PIRO", "SLBE", "VOYA")] <- 121 # May 1
+  prof_width2$first_day[prof_width2$park %in% c("INDU")] <- 60 # Mar 1
   prof_width2$first_day[prof_width2$park %in% c("SACN")] <- 60 # Mar 1 # makes first band bigger
 
   prof_width2$last_day <- NA_integer_
-  prof_width2$last_day[prof_width2$park %in% c("APIS", "PIRO", "SLBE", "VOYA")] <- 274 # Oct 1
-  prof_width2$last_day[prof_width2$park %in% c("ISRO")] <- 244 # Sep 1
-  prof_width2$last_day[prof_width2$park %in% c("INDU")] <- 305 # Nov 1
-  prof_width2$last_day[prof_width2$park %in% c("SACN")] <- 335 # Dec 1
+  prof_width2$last_day[prof_width2$park %in% c("APIS", "PIRO", "SLBE", "VOYA")] <- 304 # Oct 31
+  prof_width2$last_day[prof_width2$park %in% c("ISRO")] <- 258 # Sep 15
+  prof_width2$last_day[prof_width2$park %in% c("INDU")] <- 319 # Nov 15
+  prof_width2$last_day[prof_width2$park %in% c("SACN")] <- 351 # Dec 15
 
   # drop measurements outside standard sample period based on last_day
   prof_width <- prof_width2 |> filter(doy <= last_day) |> filter(doy >= first_day)
