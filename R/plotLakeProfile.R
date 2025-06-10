@@ -14,7 +14,7 @@
 #' You can only specify one parameter at a time. If multiple sites or years are selected, plots will be faceted on those factors.
 #' Keep options limited for best plotting results. If you specify a lake x year x parameter combination that doesn't exist
 #' (e.g., a year a lake isn't sampled), the function will return an error message instead of an empty plot. Only non-censored
-#' and non-QAQC values are plotted.
+#' and non-QAQC values are plotted. Sample periods (ie month range on the x-axis) are fixed for each park.
 #'
 #' @param park Select a park to plot. Can only plot one park at a time because of differences in length of sampling period. Valid inputs:
 #' \describe{
@@ -52,10 +52,6 @@
 #'  }
 #'
 #' @param years Numeric. Years to query. Accepted values start at 2007.
-#'
-#' @param months Numeric. Months to plot by number. Accepted values range from 1:12. Note that parks have different seasonal
-#' month ranges. Plotting has been optimized for each park's seasonal range, such that APIS, ISRO, PIRO, SLBE, and VOYA are 6:9;
-#' INDU is 4:10, and SACN is 4:11. Specifying different months than default may make the x-axis a bit wonky.
 #'
 #' @param active Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
 #' locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
@@ -95,8 +91,8 @@
 #' @examples
 #' \dontrun{
 #'
-#'# Plot pH for ISRO_02 all years with thermocline plotted as black lines.
-#' plotLakeProfile(site = "ISRO_02", parameter = "pH", months = 6:9)
+#'# Plot pH for ISRO_07 all years with thermocline plotted as black lines.
+#' plotLakeProfile(site = "ISRO_07", parameter = "pH")
 #'
 #'# Plot temperature for VOYA_01 all years with thermocline plotted as black lines.
 #' plotLakeProfile(site = "VOYA_01", parameter = "TempWater_C")
@@ -123,7 +119,6 @@
 plotLakeProfile <- function(park = 'all',
                             site = "all", site_type = 'all',
                             years = 2007:format(Sys.Date(), "%Y"),
-                            months = 4:11,
                             active = TRUE,
                             parameter = NA,
                             palette = "Spectral",
@@ -155,7 +150,6 @@ plotLakeProfile <- function(park = 'all',
 
   site_type <- match.arg(site_type, several.ok = TRUE, c("all", "impound", "lake"))
   stopifnot(class(years) %in% c("numeric", "integer"), years >= 2007)
-  stopifnot(class(months) %in% c("numeric", "integer"), months %in% c(1:12))
   stopifnot(class(active) == "logical")
   stopifnot(class(color_rev) == "logical")
   stopifnot(class(plot_title) == "logical")
@@ -183,11 +177,11 @@ plotLakeProfile <- function(park = 'all',
   #-- Compile data for plotting --
   # combine sonde and water level data and group depths by 1m or 0.25m bins
   wdat <- getResults(park = park, site = site, site_type = site_type, active = active, sample_type = "VS",
-                     include_censored = FALSE, years = years, months = months, parameter = parameter, sample_depth = 'all') |>
+                     include_censored = FALSE, years = years, parameter = parameter, sample_depth = 'all') |>
           select(Park_Code, Location_ID, sample_date, year, month, doy, Activity_Depth, param_name, value) |>
     filter(!is.na(Activity_Depth))
 
-  if(length(unique(wdat$Park_Code)) > 0){stop("More than 1 park specified. Can only plot 1 park at a time.")}
+  if(length(unique(wdat$Park_Code)) > 1){stop("More than 1 park specified. Can only plot 1 park at a time.")}
 
   # Binning by 1m depths
   wdat$depth_bin <- ifelse(wdat$Activity_Depth < 1, 0, round(wdat$Activity_Depth, 0))
@@ -216,33 +210,32 @@ plotLakeProfile <- function(park = 'all',
   color_dir <- ifelse(color_rev == FALSE, -1, 1)
   ptitle <- if(length(unique(wdat2$Location_ID)) == 1 & plot_title == TRUE){unique(wdat2$Location_ID)} else {NULL}
 
-  prof_width <- wdat2 |> select(Location_ID, year, doy) |> unique() |> arrange(Location_ID, year, doy)
-  prof_width <- prof_width |> group_by(Location_ID, year) |>
+  # Figure out width of sampling periods for tile widths, with bookends on the first and last sample day per park
+  prof_width1 <- wdat2 |> select(Location_ID, year, doy) |> unique() |> arrange(Location_ID, year, doy)
+  prof_width2 <- prof_width1 |> group_by(Location_ID, year) |>
     mutate(lag_doy = lag(doy, 1),
            lead_doy = lead(doy, 1))
 
-  # Populate NAs with 91 and 334 as first and last day of monitoring period
-
   # First day of sampling period for each park
-  prof_width$park <- substr(prof_width$Location_ID, 1, 4)
+  prof_width2$park <- substr(prof_width2$Location_ID, 1, 4)
 
-  prof_width$first_day <- NA_integer_
-  prof_width$first_day[prof_width$park %in% c("APIS", "ISRO", "PIRO", "SLBE", "VOYA")] <- 152 # June 1
-  prof_width$first_day[prof_width$park %in% c("INDU", "SACN")] <- 91 # April 1
+  prof_width2$first_day <- NA_integer_
+  prof_width2$first_day[prof_width2$park %in% c("APIS", "ISRO", "PIRO", "SLBE", "VOYA")] <- 152 # June 1
+  prof_width2$first_day[prof_width2$park %in% c("INDU")] <- 91 # April 1
+  prof_width2$first_day[prof_width2$park %in% c("SACN")] <- 60 # Mar 1 # makes first band bigger
 
-  prof_width$last_day <- NA_integer_
-  prof_width$last_day[prof_width$park %in% c("APIS", "ISRO", "PIRO", "SLBE", "VOYA")] <- 274 # Oct 1
-  prof_width$last_day[prof_width$park %in% c("INDU")] <- 305 # Nov 1
-  prof_width$last_day[prof_width$park %in% c("SACN")] <- 335 # Dec 1
+  prof_width2$last_day <- NA_integer_
+  prof_width2$last_day[prof_width2$park %in% c("APIS", "PIRO", "SLBE", "VOYA")] <- 274 # Oct 1
+  prof_width2$last_day[prof_width2$park %in% c("ISRO")] <- 244 # Sep 1
+  prof_width2$last_day[prof_width2$park %in% c("INDU")] <- 305 # Nov 1
+  prof_width2$last_day[prof_width2$park %in% c("SACN")] <- 335 # Dec 1
 
-  #++++ NEED TO CHECK HOW TO FIX FOR GLKN +++++
-  #+ 200 is July 19- anything before that is considered early. 200 is roughly the middle of the season
-  prof_width$lag_doy[is.na(prof_width$lag_doy) & prof_width$doy < 200] <-
-    prof_width$doy[is.na(prof_width$lag_doy) & prof_width$doy < 200]  - 28 # beginning of sample period: May 1; 121
+  # drop measurements outside standard sample period based on last_day
+  prof_width <- prof_width2 |> filter(doy <= last_day) |> filter(doy >= first_day)
 
-  #+ 273 is Sept 30. Anything after that is late.
-  prof_width$lead_doy[is.na(prof_width$lead_doy) & prof_width$doy > 273] <-
-    prof_width$doy[is.na(prof_width$lead_doy) & prof_width$doy > 273] + 28 # end of sample period: Oct 31.; 304
+  # For the first and last lead/lag of each year, need to set a first date/last date
+  prof_width$lag_doy[is.na(prof_width$lag_doy)] <- prof_width$first_day[is.na(prof_width$lag_doy)]
+  prof_width$lead_doy[is.na(prof_width$lead_doy)] <- prof_width$last_day[is.na(prof_width$lead_doy)]
 
   # Calculate width of profile columns as half of distance in days between samples on left and right.
   prof_width$lag_dif <- (prof_width$doy - prof_width$lag_doy)/2
@@ -261,7 +254,7 @@ plotLakeProfile <- function(park = 'all',
     }
   # thermocline calcuated for temperature only
   temp <- force(getResults(park = park, site = site, site_type = site_type, active = active, sample_type = "VS",
-                           include_censored = FALSE, years = years, months = months, parameter = "TempWater_C",
+                           include_censored = FALSE, years = years, parameter = "TempWater_C",
                            sample_depth = 'all')) |>
     select(Park_Code, Location_ID, sample_date, year, month, doy, Activity_Depth, param_name, value)
 
@@ -312,6 +305,7 @@ plotLakeProfile <- function(park = 'all',
                  labels = unique(month.abb[month])))
 
   tcline <- tcline2[!is.na(tcline2$value),]
+
   # add prof width data to tcline
   prof_unique <- prof_width |> select(Location_ID, year, doy, doy_plot, col_width) |> unique()
 
@@ -320,23 +314,23 @@ plotLakeProfile <- function(park = 'all',
 
   vpals <- c("viridis", "magma", "mako", "plasma", "rocket", "turbo")
 
+  park_doy_min  <- min(c(wdat3$doy_plot - wdat3$col_width, wdat3$first_day), na.rm = T)
+  park_doy_max <- max(c(wdat3$doy_plot + wdat3$col_width, wdat3$last_day), na.rm = T)
+  park_limits <- c(park_doy_min, park_doy_max)
 
-  park_limits <- if(park %in% c("APIS", "ISRO", "PIRO", "SLBE", "VOYA")){c(152, 274)
-    } else if(park %in% c("INDU")){c(91, 305)
-    } else if(park %in% c("ISRO")){c(91, 335)}
+  axis_labs1 <- data.frame(doy = c(91, 121, 152, 182, 213, 244, 274, 305),
+                           label = c("Apr-1", "May-1", "Jun-1", "Jul-1", "Aug-1", "Sep-1", "Oct-1", "Nov-1"))
 
-  park_breaks <- if(park %in% c("APIS", "ISRO", "PIRO", "SLBE", "VOYA")){c(152, 182, 213, 244, 274)
-    } else if(park %in% c("INDU")){c(91, 121, 152, 182, 213, 244, 274, 305)
-    } else if(park %in% c("ISRO")){c(91, 121, 152, 182, 213, 244, 274, 305, 335)}
+  axis_labs <- axis_labs1 |> filter(doy <= park_doy_max) |> filter(doy >= park_doy_min)
 
-  park_labels <- if(park %in% c("APIS", "ISRO", "PIRO", "SLBE", "VOYA")){c("Jun-1", "Jul-1", "Aug-1", "Sep-1", "Oct-1")
-    } else if(park %in% c("INDU")){c("Apr-1", "May-1", "Jun-1", "Jul-1", "Aug-1", "Sep-1", "Oct-1")
-    } else if(park %in% c("SACN")){c("Apr-1", "May-1", "Jun-1", "Jul-1", "Aug-1", "Sep-1", "Oct-1", "Nov-1")}
+  wdat3$site_fac <-
+  if(!any(site == "all")){factor(wdat3$Location_ID, levels = site)
+    } else {wdat3$Location_ID}
 
-  # scale_x_continuous(limits = c(85, 349), #115, 320),
-  #                    breaks = c(91, 121, 152, 182, 213, 244, 274, 305, 335),
-  #                    labels = c("Apr-1", "May-1", "Jun-1", "Jul-1", "Aug-1", "Sep-1", "Oct-1", "Nov-1", "Dec-1"))
-  #
+  tcline_final$site_fac <-
+    if(!any(site == "all")){factor(tcline_final$Location_ID, levels = site)
+    } else {tcline_final$Location_ID}
+
   #-- Create plot --
   profplot <-
       ggplot(wdat3 |> droplevels(), aes(x = doy_plot, y = depth_bin)) +
@@ -348,8 +342,8 @@ plotLakeProfile <- function(park = 'all',
                        aes(x = doy_plot - (col_width/2), xend = doy_plot + (col_width/2),
                            y = value, yend = value), linewidth = 0.7) }} +
         # facets if more than 1 year or site
-        {if(facet_site == TRUE & facet_year == TRUE) facet_wrap(~Location_ID + year, drop = T, scales = facet_scales)} +
-        {if(facet_site == TRUE & facet_year == FALSE) facet_wrap(~Location_ID, drop = T, scales = facet_scales)} +
+        {if(facet_site == TRUE & facet_year == TRUE) facet_wrap(~site_fac + year, drop = T, scales = facet_scales)} +
+        {if(facet_site == TRUE & facet_year == FALSE) facet_wrap(~site_fac, drop = T, scales = facet_scales)} +
         {if(facet_site == FALSE & facet_year == TRUE) facet_wrap(~year, drop = T, scales = facet_scales)} +
         # color palettes
         {if(palette %in% vpals) scale_fill_viridis_c(direction = color_dir, option = palette,
@@ -369,8 +363,8 @@ plotLakeProfile <- function(park = 'all',
             panel.grid.minor.x = element_line(color = 'grey'))}} +
         scale_y_reverse(breaks = pretty(wdat3$depth_bin, n = 8)) +
         scale_x_continuous(limits = park_limits,
-                           breaks = park_breaks,
-                           labels = park_labels)
+                           breaks = axis_labs$doy,
+                           labels = axis_labs$label)
 
 
  #return(#suppressWarnings(

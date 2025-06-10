@@ -9,7 +9,6 @@ plotLakeProfile(
   site = "all",
   site_type = "all",
   years = 2007:format(Sys.Date(), "\%Y"),
-  months = 4:11,
   active = TRUE,
   parameter = NA,
   palette = "Spectral",
@@ -59,10 +58,6 @@ monitored sites, so active = F would need to be specified to return data for tho
 
 \item{years}{Numeric. Years to query. Accepted values start at 2007.}
 
-\item{months}{Numeric. Months to plot by number. Accepted values range from 1:12. Note that parks have different seasonal
-month ranges. Plotting has been optimized for each park's seasonal range, such that APIS, ISRO, PIRO, SLBE, and VOYA are 6:9;
-INDU is 4:10, and SACN is 4:11. Specifying different months than default may make the x-axis a bit wonky.}
-
 \item{active}{Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
 locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
 least one sampling event between 2014 and 2024. See "./scripts/active_sites.R" for more details.}
@@ -99,7 +94,7 @@ options are "top", "bottom", "left", "right".}
 \item{gridlines}{Specify whether to add gridlines or not. Options are c("none" (Default), "grid_y", "grid_x", "both")}
 }
 \value{
-Returns a panel of hydrographs during the growing season for each year
+Returns a panel of lake profile plots during the growing season for each year
 in the data frame.
 }
 \description{
@@ -110,13 +105,13 @@ the number of days between sample events, centered on the day sampled. Shorter i
 You can only specify one parameter at a time. If multiple sites or years are selected, plots will be faceted on those factors.
 Keep options limited for best plotting results. If you specify a lake x year x parameter combination that doesn't exist
 (e.g., a year a lake isn't sampled), the function will return an error message instead of an empty plot. Only non-censored
-and non-QAQC values are plotted.
+and non-QAQC values are plotted. Sample periods (ie month range on the x-axis) are fixed for each park.
 }
 \examples{
 \dontrun{
 
-# Plot pH for ISRO_02 all years with thermocline plotted as black lines.
-plotLakeProfile(site = "ISRO_02", parameter = "pH", months = 6:9)
+# Plot pH for ISRO_07 all years with thermocline plotted as black lines.
+plotLakeProfile(site = "ISRO_07", parameter = "pH")
 
 # Plot temperature for VOYA_01 all years with thermocline plotted as black lines.
 plotLakeProfile(site = "VOYA_01", parameter = "TempWater_C")
