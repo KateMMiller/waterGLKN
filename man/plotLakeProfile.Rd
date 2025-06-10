@@ -22,9 +22,8 @@ plotLakeProfile(
 )
 }
 \arguments{
-\item{park}{Combine data from all parks or one or more parks at a time. Valid inputs:
+\item{park}{Select a park to plot. Can only plot one park at a time because of differences in length of sampling period. Valid inputs:
 \describe{
-\item{"all"}{Includes all parks in the network}
 \item{"APIS"}{Apostle Islands National Lakeshore}
 \item{"INDU"}{Indiana Dunes National Park}
 \item{"ISRO"}{Isle Royale National Park}
@@ -35,36 +34,34 @@ plotLakeProfile(
 \item{"VOYA"}{Voyageurs National Park}
 }}
 
-\item{site}{Filter on Location_ID. Easiest way to pick a site. Defaults to "all". Accepted sites are below.
-If new sites are added, need to be added to this function as an accepted site.
+\item{site}{Filter on Location_ID. Easiest way to pick a site. Defaults to "all" lake or riverine impounded sites.
+Accepted sites are below. If new sites are added, need to be added to this function as an accepted site.
 
-Rivers: c('MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
-        'SACN_CLAM_0.7', 'SACN_KINI_2.2', 'SACN_NAKA_4.8', 'SACN_NAKA_41.3', 'SACN_NAKA_74.5', 'SACN_NAKA_84.6',
-        'SACN_PACQ_SP_01', 'SACN_PHIP_SP_01', 'SACN_SNKE_0.5', 'SACN_STCR_104.0', 'SACN_STCR_138.9', 'SACN_STCR_15.8',
-        'SACN_STCR_2.0', 'SACN_STCR_20.0', 'SACN_STCR_43.7', 'SACN_STCR_53.9', 'SACN_STCR_63.8', 'SACN_STCR_89.7',
-        'SACN_WILO_0.5')
+Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU_05',
+          'ISRO_01', 'ISRO_02', 'ISRO_03', 'ISRO_04', 'ISRO_05', 'ISRO_06', 'ISRO_07', 'ISRO_08', 'ISRO_09',
+          'ISRO_13', 'ISRO_14', 'ISRO_19', 'ISRO_20', 'ISRO_21', 'ISRO_22', 'ISRO_24', 'ISRO_30', 'ISRO_32',
+          'PIRO_01', 'PIRO_02', 'PIRO_03', 'PIRO_04', 'PIRO_05', 'PIRO_06', 'PIRO_07', 'PIRO_08',
+          'SACN_PACQ_SP_01', 'SACN_PHIP_SP_01', 'SACN_STCR_2.0', 'SACN_STCR_15.8', 'SACN_STCR_20.0',
+          'SLBE_01', 'SLBE_02', 'SLBE_03', 'SLBE_04', 'SLBE_05', 'SLBE_07', 'SLBE_08', 'SLBE_09', 'SLBE_10', 'SLBE_11',
+          'VOYA_01', 'VOYA_02', 'VOYA_03', 'VOYA_04', 'VOYA_05', 'VOYA_06', 'VOYA_07', 'VOYA_08', 'VOYA_09', 'VOYA_10',
+          'VOYA_11', 'VOYA_12', 'VOYA_13', 'VOYA_14', 'VOYA_15', 'VOYA_16', 'VOYA_17', 'VOYA_18', 'VOYA_19',
+          'VOYA_20', 'VOYA_21', 'VOYA_22', 'VOYA_23', 'VOYA_24', 'VOYA_25')
 
-Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU_04', 'INDU_05', 'ISRO_01',
-         'ISRO_02', 'ISRO_03', 'ISRO_04', 'ISRO_05', 'ISRO_06', 'ISRO_07', 'ISRO_08', 'ISRO_09', 'ISRO_13',
-         'ISRO_14', 'ISRO_19', 'ISRO_20', 'ISRO_21', 'ISRO_22', 'ISRO_24', 'ISRO_30', 'ISRO_32', 'PIRO_01',
-         'PIRO_02', 'PIRO_03', 'PIRO_04', 'PIRO_05', 'PIRO_06', 'PIRO_07', 'PIRO_08', 'SLBE_01', 'SLBE_02',
-         'SLBE_03', 'SLBE_04', 'SLBE_05', 'SLBE_07', 'SLBE_08', 'SLBE_09', 'SLBE_10', 'SLBE_11', 'VOYA_01',
-         'VOYA_02', 'VOYA_03', 'VOYA_04', 'VOYA_05', 'VOYA_06', 'VOYA_07', 'VOYA_08', 'VOYA_09', 'VOYA_10',
-         'VOYA_11', 'VOYA_12', 'VOYA_13', 'VOYA_14', 'VOYA_15', 'VOYA_16', 'VOYA_17', 'VOYA_18', 'VOYA_19',
-         'VOYA_20', 'VOYA_21', 'VOYA_22', 'VOYA_23', 'VOYA_24', 'VOYA_25')}
+Impoundments: c('SACN_CLAM_0.7', 'SACN_STCR_53.9', 'SACN_WILO_0.5')}
 
-\item{site_type}{Quoted string to select either inland lake or stream sites. Options are
+\item{site_type}{Quoted string to select either inland lake or riverine impounded site (river sites not included).  Note that impounded sites are not actively
+monitored sites, so active = F would need to be specified to return data for those sites. Options are:
 \describe{
  \item{"all"}{Includes all location types}
  \item{"lake"}{Location_types that = "Lake"}
- \item{"river"}{Location_types that = "River/Stream"}
- \item{"impound"}{Location_types taht = "River Impoundment"}
+ \item{"impound"}{Location_types that = "Riverine Impoundment"}
  }}
 
 \item{years}{Numeric. Years to query. Accepted values start at 2007.}
 
-\item{months}{Numeric. Months to query by number. Accepted values range from 1:12. Note that most of the
-events are between months 4 and 11, and these are set as the defaults.}
+\item{months}{Numeric. Months to plot by number. Accepted values range from 1:12. Note that parks have different seasonal
+month ranges. Plotting has been optimized for each park's seasonal range, such that APIS, ISRO, PIRO, SLBE, and VOYA are 6:9;
+INDU is 4:10, and SACN is 4:11. Specifying different months than default may make the x-axis a bit wonky.}
 
 \item{active}{Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
 locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
@@ -75,10 +72,10 @@ packages to create multi-paneled figures. Current accepted values with profile d
     c("DO_mgL", "DOsat_pct", "pH", "SpecCond_uScm", "TempWater_C", "N_ugL", "P_ugL", "Hg_ngL", "HgMethyl_ngL").}
 
 \item{palette}{Diverging color palette for plots. Options currently are 'viridis'
-(yellow - green - blue), 'mako' (light blue grading to black), or any built-in continuous color palette
-available in RColorBrewer. Run RColorBrewer::display.brewer.all() to see the diverging color
-palettes. Common palettes include "Blues", "BuGn", "RdPu", "Spectral", "RdYlBu", "RdBu", "PiYg".
-See https://ggplot2-book.org/scales-colour for more info.}
+(yellow - green - blue), 'mako' (light blue grading to black), 'plasma' (yellow to purple), 'rocket' (red grading to black),
+'turbo' (rainbow), 'or any built-in continuous color palette available in RColorBrewer. Run RColorBrewer::display.brewer.all()
+to see the diverging color palettes. Common palettes include "Blues", "GnBu", "RdPu", "Spectral" (Default), "RdYlBu",
+"RdBu", "PiYg". See https://ggplot2-book.org/scales-colour for more info.}
 
 \item{color_rev}{Reverse the order of the color pallete. For example change RdYlBu from red - yellow - blue
 to blue - yellow -red.}
@@ -106,41 +103,36 @@ Returns a panel of hydrographs during the growing season for each year
 in the data frame.
 }
 \description{
-This function produces a heatmap filtered on park, site, year, month, parameter. The y-axis is 1m bins.
-If multiple samples are taken within the same bin, the median value is used. The width of the profile columns reflects
-the number of days between sample events, centered on the day sampled. Shorter intervals between events result in a
-narrower bar. You can only specify one parameter at a time. If multiple sites or years are selected, plots will be
-faceted on those factors. Keep options limited for best plotting results. If you specify a lake x year x parameter combination
-that doesn't exist (e.g., a year a lake isn't sampled), the function will return an error message instead of an empty
-plot. Only non-censored and non-QAQC values are plotted.
+This function produces a heatmap filtered on park, site, year, month, parameter. The y-axis is 1m bins, with a
+reversed Y axis, such that the surface = 0 and is at the top, and the lowest sample depth is at the bottom of the y-axis.
+If multiple samples are taken within the same 1m bin, the median value is used. The width of the profile columns reflects
+the number of days between sample events, centered on the day sampled. Shorter intervals between events result in narrower bars.
+You can only specify one parameter at a time. If multiple sites or years are selected, plots will be faceted on those factors.
+Keep options limited for best plotting results. If you specify a lake x year x parameter combination that doesn't exist
+(e.g., a year a lake isn't sampled), the function will return an error message instead of an empty plot. Only non-censored
+and non-QAQC values are plotted.
 }
 \examples{
 \dontrun{
 
-#++++ UPDATE FOR GLKN ++++
-# Plot temperature for Upper Hadlock for years 2013 - 2023 corrected by elevation with thermocline
-# plotted as black lines.
-plotLakeProfile(site = "ISRO_02", parameter = "pH")
+# Plot pH for ISRO_02 all years with thermocline plotted as black lines.
+plotLakeProfile(site = "ISRO_02", parameter = "pH", months = 6:9)
 
-# Plot temperature for Eagle Lake for years 2006 - 2023 with raw sample depth.
-# Note that we can go back to 2006 because we're using raw sample depth instead of elevation.
-plotLakeProfile(site = "ACEAGL", parameter = "Temp_C", depth_type = 'raw',
-               years = 2006:2023)
+# Plot temperature for VOYA_01 all years with thermocline plotted as black lines.
+plotLakeProfile(site = "VOYA_01", parameter = "TempWater_C")
 
-# Same plot as above, but with no plot title or thermocline.
-plotLakeProfile(site = "ACEAGL", parameter = "Temp_C", depth_type = 'raw',
-                years = 2006:2023, plot_title = FALSE, plot_thermocline = F)
-# Plot temperature for all ACAD lakes sampled in 2023 and raw sample depth.
-lakes23 <- c("ACBUBL", "ACEAGL", "ACECHO", "ACJORD", "ACLONG", "ACROUN",
-             "ACSEAL", "ACUBRK", "ACUHAD", "ACWHOL")
-plotLakeProfile(park = "ACAD", site = lakes23, parameter = "Temp_C",
-               depth_type = 'raw', years = 2023)
+# Plot Specific Conductance for SLBE_01 all years without theromocline or plot title
+plotLakeProfile(site = "SLBE_01", parameter = "SpecCond_uScm", plot_thermocline = F, plot_title = F)
 
-# Plot DO all ACAD lakes sampled in 2023 and raw sample depth, using reversed ryb palette.
-Temperature thermocline is also included as black lines.
-plotLakeProfile(park = "ACAD", site = lakes23,
-               parameter = "DOsat_pct", depth_type = 'raw', years = 2023,
-               palette = 'RdYlBu', color_rev = TRUE)
+# Plot water temp using Red-Yellow-Blue palette
+plotLakeProfile(site = "PIRO_01", parameter = "TempWater_C", palette = "RdYlBu") # PIRO has more months
+
+# Plot DO for all sites in PIRO sampled in 2023  with mako palette
+plotLakeProfile(park = "PIRO", years = 2023, parameter = "DOsat_pct", palette = "mako")
+
+# Plot temp for Lake St. Croix Sites in 2023
+lkst <- c("SACN_STCR_20.0", "SACN_STCR_15.8", "SACN_STCR_2.0")
+plotLakeProfile(site = lkst, parameter = "pH", years = 2023)
 }
 
 }

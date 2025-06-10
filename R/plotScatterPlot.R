@@ -29,27 +29,30 @@
 #' @param site Filter on Location_ID. Easiest way to pick a site. Defaults to "all". Accepted sites are below.
 #' If new sites are added, need to be added to this function as an accepted site.
 #'
-#' Rivers: c('MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
-#'         'SACN_CLAM_0.7', 'SACN_KINI_2.2', 'SACN_NAKA_4.8', 'SACN_NAKA_41.3', 'SACN_NAKA_74.5', 'SACN_NAKA_84.6',
-#'         'SACN_PACQ_SP_01', 'SACN_PHIP_SP_01', 'SACN_SNKE_0.5', 'SACN_STCR_104.0', 'SACN_STCR_138.9', 'SACN_STCR_15.8',
-#'         'SACN_STCR_2.0', 'SACN_STCR_20.0', 'SACN_STCR_43.7', 'SACN_STCR_53.9', 'SACN_STCR_63.8', 'SACN_STCR_89.7',
-#'         'SACN_WILO_0.5')
+#' Rivers: c('INDU_04', 'MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
+#'           'SACN_KINI_2.2', 'SACN_NAKA_4.8', 'SACN_NAKA_41.3', 'SACN_NAKA_74.5', 'SACN_NAKA_84.6',
+#'           'SACN_SNKE_0.5', 'SACN_STCR_43.7', 'SACN_STCR_63.8', 'SACN_STCR_89.7' 'SACN_STCR_104.0', 'SACN_STCR_138.9')
 #'
-#' Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU_04', 'INDU_05', 'ISRO_01',
-#'          'ISRO_02', 'ISRO_03', 'ISRO_04', 'ISRO_05', 'ISRO_06', 'ISRO_07', 'ISRO_08', 'ISRO_09', 'ISRO_13',
-#'          'ISRO_14', 'ISRO_19', 'ISRO_20', 'ISRO_21', 'ISRO_22', 'ISRO_24', 'ISRO_30', 'ISRO_32', 'PIRO_01',
-#'          'PIRO_02', 'PIRO_03', 'PIRO_04', 'PIRO_05', 'PIRO_06', 'PIRO_07', 'PIRO_08', 'SLBE_01', 'SLBE_02',
-#'          'SLBE_03', 'SLBE_04', 'SLBE_05', 'SLBE_07', 'SLBE_08', 'SLBE_09', 'SLBE_10', 'SLBE_11', 'VOYA_01',
-#'          'VOYA_02', 'VOYA_03', 'VOYA_04', 'VOYA_05', 'VOYA_06', 'VOYA_07', 'VOYA_08', 'VOYA_09', 'VOYA_10',
-#'          'VOYA_11', 'VOYA_12', 'VOYA_13', 'VOYA_14', 'VOYA_15', 'VOYA_16', 'VOYA_17', 'VOYA_18', 'VOYA_19',
-#'          'VOYA_20', 'VOYA_21', 'VOYA_22', 'VOYA_23', 'VOYA_24', 'VOYA_25')
+#' Lakes: c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU_05',
+#'           'ISRO_01', 'ISRO_02', 'ISRO_03', 'ISRO_04', 'ISRO_05', 'ISRO_06', 'ISRO_07', 'ISRO_08', 'ISRO_09',
+#'           'ISRO_13', 'ISRO_14', 'ISRO_19', 'ISRO_20', 'ISRO_21', 'ISRO_22', 'ISRO_24', 'ISRO_30', 'ISRO_32',
+#'           'PIRO_01', 'PIRO_02', 'PIRO_03', 'PIRO_04', 'PIRO_05', 'PIRO_06', 'PIRO_07', 'PIRO_08',
+#'           'SACN_PACQ_SP_01', 'SACN_PHIP_SP_01', 'SACN_STCR_2.0', 'SACN_STCR_15.8', 'SACN_STCR_20.0',
+#'           'SLBE_01', 'SLBE_02', 'SLBE_03', 'SLBE_04', 'SLBE_05', 'SLBE_07', 'SLBE_08', 'SLBE_09', 'SLBE_10', 'SLBE_11',
+#'           'VOYA_01',
+#'           'VOYA_02', 'VOYA_03', 'VOYA_04', 'VOYA_05', 'VOYA_06', 'VOYA_07', 'VOYA_08', 'VOYA_09', 'VOYA_10',
+#'           'VOYA_11', 'VOYA_12', 'VOYA_13', 'VOYA_14', 'VOYA_15', 'VOYA_16', 'VOYA_17', 'VOYA_18', 'VOYA_19',
+#'           'VOYA_20', 'VOYA_21', 'VOYA_22', 'VOYA_23', 'VOYA_24', 'VOYA_25')
 #'
-#' @param site_type Quoted string to select either inland lake or stream sites. Options are
+#' Impoundments: c('SACN_CLAM_0.7', 'SACN_STCR_53.9', 'SACN_WILO_0.5')
+#'
+#' @param site_type Quoted string to select either inland lake or stream sites.  Note that impounded sites are not actively
+#' monitored sites, so active = F would need to be specified to return data for those sites. Options are:
 #' \describe{
 #'  \item{"all"}{Includes all location types}
 #'  \item{"lake"}{Location_types that = "Lake"}
 #'  \item{"river"}{Location_types that = "River/Stream"}
-#'  \item{"impound"}{Location_types taht = "River Impoundment"}
+#'  \item{"impound"}{Location_types that = "Riverine Impoundment"}
 #'  }
 #'
 #' @param years Numeric. Years to query. Accepted values start at 2007.
@@ -69,8 +72,9 @@
 #'       "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
 #'       "WaveHt_cm", "WaveHt_m", "WindDir_Deg").
 #'
-#' @param layers Options are "points" and "smooth". By default, both will plot. If "smooth" specified, will plot a loess
-#' smoothed line. See span for more details. If only points specified, will return a scatterplot.
+#' @param layers Options are "points", "line", and "smooth". By default, both points and a smoothed line will plot.
+#' If "smooth" specified, will plot a loess smoothed line. See span for more details. If only points specified, will
+#' return a scatterplot. If 'line' is specified, a linear line will be plotted.
 #'
 #' @param palette Theme to plot points and lines. Options include 'viridis' (Default- ranges of blue,
 #' green and yellow), magma (yellow, red, purple), plasma (brighter version of magma), turbo (rainbow),
@@ -95,31 +99,25 @@
 #' @examples
 #' \dontrun{
 #'
-#' #++++ UPDATE FOR GLKN ++++
 #' # Plot Temp vs DO for VOYA all years on same figure
-#' plotScatterPlot(park = "VOYA", parameters = c("DO_mgL", "Temp_C"),
+#' plotScatterPlot(park = "VOYA", parameters = c("DO_mgL", "TempWater_C"),
 #'   palette = 'viridis', facet_site = F, legend_position = "bottom")
 #'
-#' # Plot Secchi depth vs. surface DOC in Eagle Lake, Jordon Pond, Echo Lake, and Witch Hole Pond
-#' plotScatterPlot(site = c("ACEAGL", "ACJORD", "ACWHOL", "ACECHO"), parameters = c("SDepth_m", "DOC_mgL"),
+#' # Plot Temp vs DO for VOYA all years on separate figures
+#' plotScatterPlot(park = "VOYA", parameters = c("DO_mgL", "TempWater_C"),
+#'   palette = 'viridis', facet_site = T, legend_position = "bottom")
+#'
+#' # Plot Secchi depth vs. surface DOC in SLBE sites
+#' plotScatterPlot(park = "SLBE", parameters = c("Secchi_m", "ChlA_ugL"),
 #'   span = 0.9, facet_site = F, legend_position = 'bottom')
 #'
-#' # Plot Secchi depth vs. surface TN in Eagle Lake, Jordon Pond, and Witch Hole Pond
-#' plotScatterPlot(site = c("ACEAGL", "ACJORD", "ACWHOL"), parameters = c("SDepth_m", "TN_mgL"),
-#'   span = 0.9, facet_site = F, legend_position = 'bottom')
+#' # Plot all depths of ISRO_07 for temp vs ChlA using a linear instead of smoothed line
+#' plotScatterPlot(site = "ISRO_07", sample_depth = "all", parameters = c("ChlA_ugL", "TempWater_C"),
+#' layers = c("points", "line"))
 #'
-#' # Plot smoothed discharge vs. specific conductance for the Pogue Brook using span of 0.9.
-#' plotScatterPlot(site = "MABISA", parameters = c("SpCond_uScm", "Discharge_cfs"), span = 0.9, palette = c("forestgreen"))
-#'
-#' # Plot smoothed discharge vs. specific conductance for SARA streams using span of 0.9.
-#' plotScatterPlot(park = "SARA", parameters = c("SpCond_uScm", "Discharge_cfs"), span = 0.9, facet_site = F,
-#' legend_position = 'bottom')
-#'
-#' # Same as above, but faceted by site.
-#' plotScatterPlot(park = "SARA", parameters = c("SpCond_uScm", "Discharge_cfs"), span = 0.9, facet_site = T)
-#'
-#' # Plot TN vs discharge in SARA streams
-#' plotScatterPlot(park = "SARA", parameters = c("TN_mgL", "Discharge_cfs"), span = 0.9, facet_site = F)
+#' # Plot surface measurements of DO and temp for ISRO_07 and include smoothed and linear line.
+#' plotScatterPlot(site = "ISRO_07", parameters = c("DOsat_pct", "TempWater_C"),
+#'  layers = c("points", "line", 'smooth'))
 #'
 #'}
 #'
@@ -153,22 +151,24 @@ plotScatterPlot <- function(park = "all",
   park <- match.arg(park, several.ok = TRUE,
                     c("all", "APIS", "INDU", "ISRO", "PIRO", "SACN", "SLBE", "VOYA"))
 
-  Rivers <- c('MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
-              'SACN_CLAM_0.7', 'SACN_KINI_2.2', 'SACN_NAKA_4.8', 'SACN_NAKA_41.3', 'SACN_NAKA_74.5', 'SACN_NAKA_84.6',
-              'SACN_PACQ_SP_01', 'SACN_PHIP_SP_01', 'SACN_SNKE_0.5', 'SACN_STCR_104.0', 'SACN_STCR_138.9', 'SACN_STCR_15.8',
-              'SACN_STCR_2.0', 'SACN_STCR_20.0', 'SACN_STCR_43.7', 'SACN_STCR_53.9', 'SACN_STCR_63.8', 'SACN_STCR_89.7',
-              'SACN_WILO_0.5')
-  Lakes <- c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU_04', 'INDU_05', 'ISRO_01',
-             'ISRO_02', 'ISRO_03', 'ISRO_04', 'ISRO_05', 'ISRO_06', 'ISRO_07', 'ISRO_08', 'ISRO_09', 'ISRO_13',
-             'ISRO_14', 'ISRO_19', 'ISRO_20', 'ISRO_21', 'ISRO_22', 'ISRO_24', 'ISRO_30', 'ISRO_32', 'PIRO_01',
-             'PIRO_02', 'PIRO_03', 'PIRO_04', 'PIRO_05', 'PIRO_06', 'PIRO_07', 'PIRO_08', 'SLBE_01', 'SLBE_02',
-             'SLBE_03', 'SLBE_04', 'SLBE_05', 'SLBE_07', 'SLBE_08', 'SLBE_09', 'SLBE_10', 'SLBE_11', 'VOYA_01',
-             'VOYA_02', 'VOYA_03', 'VOYA_04', 'VOYA_05', 'VOYA_06', 'VOYA_07', 'VOYA_08', 'VOYA_09', 'VOYA_10',
-             'VOYA_11', 'VOYA_12', 'VOYA_13', 'VOYA_14', 'VOYA_15', 'VOYA_16', 'VOYA_17', 'VOYA_18', 'VOYA_19',
-             'VOYA_20', 'VOYA_21', 'VOYA_22', 'VOYA_23', 'VOYA_24', 'VOYA_25')
+  Rivers <- c('INDU_04', 'MISS_UM814', 'MISS_UM822', 'MISS_UM852', 'MISS_UM862', 'MISS_UM868', 'MISS_UM880', 'SACN_APLE_0.5',
+              'SACN_KINI_2.2', 'SACN_NAKA_4.8', 'SACN_NAKA_41.3', 'SACN_NAKA_74.5', 'SACN_NAKA_84.6',
+              'SACN_SNKE_0.5', 'SACN_STCR_43.7', 'SACN_STCR_63.8', 'SACN_STCR_89.7', 'SACN_STCR_104.0', 'SACN_STCR_138.9')
 
-  site <- match.arg(site, several.ok = TRUE, c("all", Rivers, Lakes))
-  if(any(site == "all")){site = c(Rivers, Lakes)} else {site}
+  Lakes <- c('APIS_01', 'APIS_02', 'APIS_03', 'APIS_04', 'INDU_01', 'INDU_02', 'INDU_05',
+            'ISRO_01', 'ISRO_02', 'ISRO_03', 'ISRO_04', 'ISRO_05', 'ISRO_06', 'ISRO_07', 'ISRO_08', 'ISRO_09',
+            'ISRO_13', 'ISRO_14', 'ISRO_19', 'ISRO_20', 'ISRO_21', 'ISRO_22', 'ISRO_24', 'ISRO_30', 'ISRO_32',
+            'PIRO_01', 'PIRO_02', 'PIRO_03', 'PIRO_04', 'PIRO_05', 'PIRO_06', 'PIRO_07', 'PIRO_08',
+            'SACN_PACQ_SP_01', 'SACN_PHIP_SP_01', 'SACN_STCR_2.0', 'SACN_STCR_15.8', 'SACN_STCR_20.0',
+            'SLBE_01', 'SLBE_02', 'SLBE_03', 'SLBE_04', 'SLBE_05', 'SLBE_07', 'SLBE_08', 'SLBE_09', 'SLBE_10', 'SLBE_11',
+            'VOYA_01', 'VOYA_02', 'VOYA_03', 'VOYA_04', 'VOYA_05', 'VOYA_06', 'VOYA_07', 'VOYA_08', 'VOYA_09', 'VOYA_10',
+            'VOYA_11', 'VOYA_12', 'VOYA_13', 'VOYA_14', 'VOYA_15', 'VOYA_16', 'VOYA_17', 'VOYA_18', 'VOYA_19',
+            'VOYA_20', 'VOYA_21', 'VOYA_22', 'VOYA_23', 'VOYA_24', 'VOYA_25')
+
+  Impoundments <- c('SACN_CLAM_0.7', 'SACN_STCR_53.9', 'SACN_WILO_0.5')
+
+  site <- match.arg(site, several.ok = TRUE, c("all", Rivers, Lakes, Impoundments))
+  if(any(site == "all")){site = c(Rivers, Lakes, Impoundments)} else {site}
 
   site_type <- match.arg(site_type, several.ok = TRUE, c("all", "impound", "lake", "river"))
   sample_type <- match.arg(sample_type, c("all", "VS", "QC"))
@@ -178,7 +178,7 @@ plotScatterPlot <- function(park = "all",
   stopifnot(length(parameters) == 2)
   sample_depth <- match.arg(sample_depth, c("all", "surface"))
   #stopifnot(class(include_censored) == "logical")
-  layers <- match.arg(layers, c("points", "smooth"), several.ok = TRUE)
+  layers <- match.arg(layers, c("points", "smooth", "line"), several.ok = TRUE)
   stopifnot(class(span) %in% "numeric")
   stopifnot(class(facet_site) == "logical")
   facet_scales <- match.arg(facet_scales, c("fixed", "free_y", "free_x", "free"))
@@ -247,6 +247,8 @@ plotScatterPlot <- function(park = "all",
       # layers
       {if(any(layers %in% "smooth")) geom_smooth(aes(text = paste0("Site: ", Location_ID, "<br>")),
                                       method = 'loess', formula = 'y ~ x', se = F, span = span) } +
+      {if(any(layers %in% "line")) geom_smooth(aes(text = paste0("Site: ", Location_ID, "<br>")),
+                                               method = 'lm', formula = 'y ~ x', se = F) } +
       geom_point(aes(text = paste0("Site: ", Location_ID, "<br>",
                                      "X Variable: ", x_lab, "<br>",
                                      "X: ", round(value_x, 1), "<br>",
