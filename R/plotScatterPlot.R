@@ -99,6 +99,11 @@
 #' @examples
 #' \dontrun{
 #'
+#' # RUN IMPORT FIRST: import both lakes and rivers data as zip files
+#' river_zip = ("../data/GLKN_water/records-2309369.zip")
+#' lake_zip = ("../data/GLKN_water/records-2306516.zip")
+#' importData(type = 'zip', filepath = c(river_zip, lake_zip))
+#'
 #' # Plot Temp vs DO for VOYA all years on same figure
 #' plotScatterPlot(park = "VOYA", parameters = c("DO_mgL", "TempWater_C"),
 #'   palette = 'viridis', facet_site = F, legend_position = "bottom")

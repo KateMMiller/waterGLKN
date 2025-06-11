@@ -152,6 +152,11 @@ instead of an empty plot.
 \examples{
 \dontrun{
 
+# RUN IMPORT FIRST: import both lakes and rivers data as zip files
+river_zip = ("../data/GLKN_water/records-2309369.zip")
+lake_zip = ("../data/GLKN_water/records-2306516.zip")
+importData(type = 'zip', filepath = c(river_zip, lake_zip))
+
 # Plot smoothed surface pH for ISRO_01 for all years
 plotTrend(site = "ISRO_01", parameter = "pH")
 

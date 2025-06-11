@@ -92,6 +92,11 @@
 #' @examples
 #' \dontrun{
 #'
+#' # RUN IMPORT FIRST: import both lakes and rivers data as zip files
+#' river_zip = ("../data/GLKN_water/records-2309369.zip")
+#' lake_zip = ("../data/GLKN_water/records-2306516.zip")
+#' importData(type = 'zip', filepath = c(river_zip, lake_zip))
+#'
 #'# Plot pH for ISRO_07 all years with thermocline plotted as black lines.
 #' plotLakeProfile(site = "ISRO_07", parameter = "pH")
 #'
