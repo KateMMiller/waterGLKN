@@ -40,6 +40,8 @@ The views will then be row binded together.
 \examples{
 \dontrun{
 
+library(waterGLKN)
+
 # Download lakes and rivers data package from DataStore
 devtools::install_github("nationalparkservice/NPSutils") # might take a few tries to install
 NPSutils::get_data_packages(c("2306516", "2309369"))
