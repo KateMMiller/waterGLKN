@@ -112,7 +112,7 @@
 #' # Plot DO for all sites in PIRO sampled in 2023  with mako palette
 #' plotLakeProfile(park = "PIRO", years = 2023, parameter = "DOsat_pct", palette = "mako")
 #'
-#' # Plot temp for Lake St. Croix Sites in 2023
+#' # Plot pH for Lake St. Croix Sites in 2023
 #' lkst <- c("SACN_STCR_20.0", "SACN_STCR_15.8", "SACN_STCR_2.0")
 #' plotLakeProfile(site = lkst, parameter = "pH", years = 2023)
 #' }
@@ -316,6 +316,10 @@ plotLakeProfile <- function(park = 'all',
   prof_unique <- prof_width |> select(Location_ID, year, doy, doy_plot, col_width) |> unique()
 
   tcline_final <- left_join(tcline, prof_unique, by = c("Location_ID", "year", "doy"))
+
+  tcline_final$site_fac <-
+    if(!any(site == "all")){factor(tcline_final$Location_ID, levels = site)
+    } else {tcline_final$Location_ID}
   }
 
   vpals <- c("viridis", "magma", "mako", "plasma", "rocket", "turbo")
@@ -333,9 +337,7 @@ plotLakeProfile <- function(park = 'all',
   if(!any(site == "all")){factor(wdat3$Location_ID, levels = site)
     } else {wdat3$Location_ID}
 
-  tcline_final$site_fac <-
-    if(!any(site == "all")){factor(tcline_final$Location_ID, levels = site)
-    } else {tcline_final$Location_ID}
+
 
   #-- Create plot --
   profplot <-

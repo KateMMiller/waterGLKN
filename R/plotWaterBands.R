@@ -401,6 +401,6 @@ plotWaterBands <- function(park = "all",
     )
 
     final_plot <- if(plotly == TRUE){plotly::ggplotly(monthly_plot, tooltip = "text")} else {monthly_plot}
-    return(final_plot)
+    return(suppressWarnings(final_plot))
     }
 

@@ -84,6 +84,10 @@ The second parameter will be treated as the explanatory (x) variable. Current ac
       "TempAir_C", "TempWater_C", "Transp_cm", "TSS_mgL", "Turbidity_NTU", "WaterLevel_m",
       "WaveHt_cm", "WaveHt_m", "WindDir_Deg").}
 
+\item{sample_depth}{Filter on sample depth. If "all" (Default), returns all sample depths. If "surface",
+only returns records that are either blank or "Surface" in the Activity_Relative_Depth column of the Results view.
+If there are multiple surface samples for a given site, date, parameter, the median value will be used.}
+
 \item{layers}{Options are "points", "line", and "smooth". By default, both points and a smoothed line will plot.
 If "smooth" specified, will plot a loess smoothed line. See span for more details. If only points specified, will
 return a scatterplot. If 'line' is specified, a linear line will be plotted.}
@@ -137,7 +141,7 @@ plotScatterPlot(park = "VOYA", parameters = c("DO_mgL", "TempWater_C"),
 plotScatterPlot(park = "VOYA", parameters = c("DO_mgL", "TempWater_C"),
   palette = 'viridis', facet_site = T, legend_position = "bottom")
 
-# Plot Secchi depth vs. surface DOC in SLBE sites
+# Plot Secchi depth vs. surface ChlA in SLBE sites
 plotScatterPlot(park = "SLBE", parameters = c("Secchi_m", "ChlA_ugL"),
   span = 0.9, facet_site = F, legend_position = 'bottom')
 

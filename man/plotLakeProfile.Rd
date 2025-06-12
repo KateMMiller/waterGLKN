@@ -131,7 +131,7 @@ plotLakeProfile(site = "PIRO_01", parameter = "TempWater_C", palette = "RdYlBu")
 # Plot DO for all sites in PIRO sampled in 2023  with mako palette
 plotLakeProfile(park = "PIRO", years = 2023, parameter = "DOsat_pct", palette = "mako")
 
-# Plot temp for Lake St. Croix Sites in 2023
+# Plot pH for Lake St. Croix Sites in 2023
 lkst <- c("SACN_STCR_20.0", "SACN_STCR_15.8", "SACN_STCR_2.0")
 plotLakeProfile(site = lkst, parameter = "pH", years = 2023)
 }
