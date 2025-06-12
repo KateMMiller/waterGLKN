@@ -100,6 +100,7 @@
 #' \dontrun{
 #'
 #' # RUN IMPORT FIRST: import both lakes and rivers data as zip files
+#' library(waterGLKN)
 #' river_zip = ("../data/GLKN_water/records-2309369.zip")
 #' lake_zip = ("../data/GLKN_water/records-2306516.zip")
 #' importData(type = 'zip', filepath = c(river_zip, lake_zip))

@@ -125,6 +125,7 @@
 #' \dontrun{
 #'
 #' # RUN IMPORT FIRST: import both lakes and rivers data as zip files
+#' library(waterGLKN)
 #' river_zip = ("../data/GLKN_water/records-2309369.zip")
 #' lake_zip = ("../data/GLKN_water/records-2306516.zip")
 #' importData(type = 'zip', filepath = c(river_zip, lake_zip))
@@ -243,7 +244,7 @@ plotTrend <- function(park = "all",
   #-- Compile data for plotting --
   wdat <-
     getResults(park = park, site = site, site_type = site_type, sample_type = "VS", years = years,
-               months = months, active = active, parameter = parameters, sample_depth = sample_depth,
+               months = months, active = active, parameter = parameter, sample_depth = sample_depth,
                include_censored = include_censored) |>
     group_by(Location_ID, year, month, sample_date, doy, Activity_Relative_Depth, param_name, censored) |>
     summarize(value = median(value, na.rm = T), .groups = 'drop')
