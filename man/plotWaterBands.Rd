@@ -120,6 +120,7 @@ represents the median value. Sample periods (ie month range on the x-axis) are f
 \examples{
 
 # RUN IMPORT FIRST: import both lakes and rivers data as zip files
+library(waterGLKN)
 river_zip = ("../data/GLKN_water/records-2309369.zip")
 lake_zip = ("../data/GLKN_water/records-2306516.zip")
 importData(type = 'zip', filepath = c(river_zip, lake_zip))
@@ -128,9 +129,15 @@ importData(type = 'zip', filepath = c(river_zip, lake_zip))
 plotWaterBands(site = "SACN_STCR_20.0", year_curr = 2023, years_historic = 2007:2022,
   parameter = "pH", legend_position = 'right')
 
-# Plot ChlA in VOYA_01 for 2023, including censored
-plotWaterBands(site = "VOYA_01", year_curr = 2023, years_historic = 2007:2022,
+# Plot ChlA in Lake St. Croix sites for 2023, including censored
+lkst <- c("SACN_STCR_20.0", "SACN_STCR_15.8", "SACN_STCR_2.0")
+plotWaterBands(site = lkst, year_curr = 2023, years_historic = 2007:2022,
   parameter = "ChlA_ugL", legend_position = 'right', include_censored = T)
+
+# Same as above, but with plotly
+plotWaterBands(site = lkst, year_curr = 2023, years_historic = 2007:2022,
+  parameter = "ChlA_ugL", legend_position = 'right', include_censored = T,
+  plotly = TRUE)
 
 # Plot DO in SLBE  2023
 plotWaterBands(park = "SLBE", year_curr = 2023, years_historic = 2007:2022,

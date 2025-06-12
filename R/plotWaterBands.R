@@ -110,6 +110,7 @@
 #' @examples
 #'
 #' # RUN IMPORT FIRST: import both lakes and rivers data as zip files
+#' library(waterGLKN)
 #' river_zip = ("../data/GLKN_water/records-2309369.zip")
 #' lake_zip = ("../data/GLKN_water/records-2306516.zip")
 #' importData(type = 'zip', filepath = c(river_zip, lake_zip))
@@ -118,9 +119,15 @@
 #' plotWaterBands(site = "SACN_STCR_20.0", year_curr = 2023, years_historic = 2007:2022,
 #'   parameter = "pH", legend_position = 'right')
 #'
-#' # Plot ChlA in VOYA_01 for 2023, including censored
-#' plotWaterBands(site = "VOYA_01", year_curr = 2023, years_historic = 2007:2022,
+#' # Plot ChlA in Lake St. Croix sites for 2023, including censored
+#' lkst <- c("SACN_STCR_20.0", "SACN_STCR_15.8", "SACN_STCR_2.0")
+#' plotWaterBands(site = lkst, year_curr = 2023, years_historic = 2007:2022,
 #'   parameter = "ChlA_ugL", legend_position = 'right', include_censored = T)
+#'
+#' # Same as above, but with plotly
+#' plotWaterBands(site = lkst, year_curr = 2023, years_historic = 2007:2022,
+#'   parameter = "ChlA_ugL", legend_position = 'right', include_censored = T,
+#'   plotly = TRUE)
 #'
 #' # Plot DO in SLBE  2023
 #' plotWaterBands(park = "SLBE", year_curr = 2023, years_historic = 2007:2022,
@@ -203,12 +210,12 @@ plotWaterBands <- function(park = "all",
                               paste0(wdat1$param_name))
 
   wdat1$sample_date <- as.Date(wdat1$sample_date, format = "%Y-%m-%d")
-  head(wdat1)
 
   wdat <- wdat1 |> filter((Park_Code %in% c("APIS", "PIRO", "SLBE", "VOYA") & month %in% 6:9) |
                           (Park_Code == "INDU" & month %in% 5:8) |
                           (Park_Code == "ISRO" & month %in% 6:8) |
                           (Park_Code == "SACN" & month %in% 4:11))
+
   months <- unique(wdat$month)
 
   # join wdat with WQ thresholds, stored as a dataset in the package
@@ -235,6 +242,14 @@ plotWaterBands <- function(park = "all",
   wdat_hist <- wdat[wdat$year %in% years_historic, ] |> droplevels()
   wdat_curr <- wdat[wdat$year == year_current, ] |> droplevels()
 
+  wdat_hist$site_fac <-
+    if(!any(site == "all")){factor(wdat_hist$Location_ID, levels = site)
+    } else {wdat_hist$Location_ID}
+
+  wdat_curr$site_fac <-
+    if(!any(site == "all")){factor(wdat_curr$Location_ID, levels = site)
+    } else {wdat_curr$Location_ID}
+
   if(nrow(wdat_curr) == 0){
     stop(paste0("There are no data available to plot for ", year_current, " in: ",
                 paste0(site, collapse = ", "), ", and for param_names: ",
@@ -248,7 +263,7 @@ plotWaterBands <- function(park = "all",
 
  # Calc min/max 95% stats
  wdat_sum <- wdat_hist |>
-   group_by(Location_ID, Park_Code, month, mon, param_name, param_label, Result_Unit) |>
+   group_by(Location_ID, Park_Code, month, mon, param_name, param_label, Result_Unit, site_fac) |>
    summarize(num_samps = sum(!is.na(value)),
              median_val = median(value, na.rm = TRUE),
              min_val = min(value, na.rm = TRUE),
@@ -266,13 +281,13 @@ plotWaterBands <- function(park = "all",
     mutate(metric_type = # enable once have WQ thresholds
       # ifelse(!is.na(UpperThreshold_corr) & value > UpperThreshold_corr, "poor value",
       # ifelse(!is.na(LowerThreshold_corr) & value < LowerThreshold_corr, "poor value",
-      "value")#))
+        ifelse(censored == TRUE, "censored", "value"))
 
-  wdat_med <- wdat_sum |> select(Location_ID:Result_Unit, median_val) |>
+  wdat_med <- wdat_sum |> select(Location_ID:Result_Unit, median_val, site_fac) |>
     mutate(metric_type = "median")
 
   wdat_hist2 <- wdat_sum |>
-    select(Location_ID:Result_Unit, lower_100, upper_100, lower_95, upper_95, lower_50, upper_50) |>
+    select(Location_ID:Result_Unit, site_fac, lower_100, upper_100, lower_95, upper_95, lower_50, upper_50) |>
     pivot_longer(cols = c(lower_100, upper_100, lower_95, upper_95, lower_50, upper_50),
                  names_to = "metric", values_to = "value") |>
     mutate(metric_type = ifelse(grepl("lower", metric), "lower", "upper"),
@@ -285,74 +300,38 @@ plotWaterBands <- function(park = "all",
 
   # xaxis_labels <- lapply(xaxis_breaks, function(x){as.character(lubridate::month(x, label = T))})
 
-  # thresh <- ifelse((!all(is.na(wdat_curr$UpperThreshold_corr)) & threshold == TRUE) |
-  #                  (!all(is.na(wdat_curr$LowerThreshold_corr)) & threshold == TRUE),
-  #                  TRUE, FALSE)
+  # Set up legend
+  fill_values <-
+    if(include_censored == TRUE){ c("d100" = "#E4F0F8", "d95" = "#B8D8ED", "d50" = "#7FB9DD")
+    } else {c("d100" = "#E4F0F8", "d95" = "#B8D8ED", "d50" = "#7FB9DD")}
 
-  plot_values <-
-    # if(thresh == TRUE){
-    # c("d100" = "#E4F0F8", "d95" = "#B8D8ED", "d50" = "#7FB9DD", "median" = "#1378b5",
-    #  "value" = "black", "poor value" = "orange",
-    #  "Upper WQ Threshold" = "black", "Lower WQ Threshold" = "black")
-    # } else {
-    c("d100" = "#E4F0F8", "d95" = "#B8D8ED", "d50" = "#7FB9DD", "median" = "#1378b5",
-      "value" = "black")# , "poor value" = "orange")
-    #}
-  #++++ ENDED HERE: ADD CENSORED VALUE AS OPTION ++++
+  fill_labels <- c("d100" = "Historic range", "d95" = "Hist. 95% range", "d50" = "Hist. 50% range")
 
-  plot_breaks <-
-    # if(thresh == TRUE){
-    #  c("d100", "d95", "d50", "median", "value", "poor value", "Upper WQ Threshold", "Lower WQ Threshold")
-    # } else {
-    c("d100", "d95", "d50", "median", "value")#, "poor value")
-    #}
+  fill_breaks <-  c("d100", "d95", "d50")
 
-  plot_labels <-
-    # if(thresh == TRUE){
-    # c("d100" = "Historic range", "d95" = "Hist. 95% range",
-    #   "d50" = "Hist. 50% range", "median" = "Hist. median",
-    #   "value" = "Current WQ value", "poor value" = "Curr. poor WQ value",
-    #   "Upper WQ Threshold" = "Upper WQ Threshold",
-    #   "Lower WQ Threshold" = "Lower WQ Threshold")
-    # } else {
-    c("d100" = "Historic range", "d95" = "Hist. 95% range",
-      "d50" = "Hist. 50% range", "median" = "Hist. median",
-      "value" = paste0("Current (", year_current, ") WQ value"))#, "poor value" = "Curr. poor WQ value")}
+  color_values <-
+    if(include_censored == TRUE){c("median" = "#1378b5", "value" = "black", 'censored' = 'black')
+    } else {c("median" = "#1378b5", "value" = "black")
+    }
 
-  line_values <- NULL
-    # if(thresh == TRUE){
-    #  c("median" = "solid",
-    #    "Upper WQ Threshold" = "solid",
-    #    "Lower WQ Threshold" = "dashed")
-    # } else {NULL}#c("median" = "solid")}
+  color_labels <-
+    if(include_censored == TRUE){c("median" = "Hist. median",
+                                   "value" = paste0("Current (", year_current, ") WQ value"),
+                                   "censored" = "Current censored value")
+    } else {c("median" = "Hist. median", "value" = paste0("Current (", year_current, ") WQ value")) }
 
-  line_breaks <- NULL
-    # if(thresh == TRUE){c(#"median",
-    #                      "Upper WQ Threshold", "Lower WQ Threshold")} else {NULL}#c("median")}
+  color_breaks <- if(include_censored == TRUE){c("median", "value", "censored")
+  } else {c("median", "value")}
 
-  line_labels <- NULL
-    # if(thresh == TRUE){
-    #   c(#"median" = "Hist. median",
-    #    "Upper WQ Threshold" = "Upper WQ Threshold",
-    #    "Lower WQ Threshold" = "Lower WQ Threshold")
-    # } else {NULL}#c("median" = "Hist. median")}
+  shape_values <- if(include_censored == TRUE){c("median" = NA, "value" = 19, "censored" = 8)
+  } else {c("median" = NA, "value" = 19)}
+
+  size_values <- if(include_censored == TRUE){c("median" = 1, "value" = 2, "censored" = 3)
+    } else {c("median" = 1, "value" = 2)}
 
   ylab <- unique(wdat_curr$param_label)
 
-   # wdat_hist2$mon <- factor(wdat_hist2$month,
-   #                          levels = months,
-   #                          labels = xaxis_breaks, ordered = T)
-   #
-   # wdat_curr$mon <- factor(wdat_curr$month,
-   #                         levels = months,
-   #                         labels = xaxis_breaks, ordered = T)
-   #
-   # wdat_med$mon <- factor(wdat_med$month,
-   #                        levels = months,
-   #                        labels = xaxis_breaks, ordered = T)
-
-
-  facetsite <- ifelse(length(unique(wdat_curr$Location_ID)) > 1, TRUE, FALSE)
+  facetsite <- ifelse(length(unique(wdat_curr$site_fac)) > 1, TRUE, FALSE)
 
   monthly_plot <- #suppressWarnings(
     ggplot() + theme_WQ() +
@@ -367,42 +346,38 @@ plotWaterBands <- function(park = "all",
                                   "Distribution: ", as.numeric(gsub("\\D", "", distrib)), "%", "<br>",
                                   "Historic Upper value: ", round(upper, 1), "<br>",
                                   "Historic Lower value: ", round(lower, 1), "<br>")))+
-    # geom_line(data = wdat_hist2, aes(y = lower, color = metric_type, group = metric_type)) +
-    # geom_line(data = wdat_hist2, aes(y = upper, color = metric_type, group = metric_type)) +
     geom_line(data = wdat_med,
-              aes(y = median_val, x = mon, color = metric_type, group = metric_type,
+              aes(y = median_val, x = mon, group = metric_type, color = metric_type, linewidth = metric_type,
                   text = paste0("Site: ", Location_ID, "<br>",
                                 "Month: ", mon, "<br>",
                                 "param_name: ", param_label, "<br>",
                                 "Historic Median: ", round(median_val, 1), "<br>")), lwd = 0.7) +
     geom_point(data = wdat_curr,
-               aes(y = value, x = mon, color = metric_type, group = metric_type,
+               aes(y = value, x = mon, #color = metric_type,
+                   group = metric_type,
+                   shape = metric_type, size = metric_type,
                    text = paste0("Site: ", Location_ID, "<br>",
                                  "Month: ", mon, "<br>",
                                  "param_name: ", param_label, "<br>",
                                  "Current value: ", round(value, 1), "<br>"))) +
-    scale_color_manual(values = plot_values,
-                       breaks = plot_breaks,
-                       labels = plot_labels,
+    scale_color_manual(values = color_values,
+                       breaks = color_breaks,
+                       labels = color_labels,
                        name = NULL) +
-    scale_fill_manual(values = plot_values,
-                      breaks = plot_breaks,
-                      labels = plot_labels,
+    scale_fill_manual(values = fill_values,
+                      breaks = fill_breaks,
+                      labels = fill_labels,
                       name = NULL) +
-    #guides(color = "none") +
-    scale_linetype_manual(values = line_values,
-                          breaks = line_breaks,
-                          labels = line_labels,
-                          name = NULL) +
+    scale_shape_manual(values = shape_values,
+                       breaks = color_breaks,
+                       labels = color_labels,
+                       name = NULL) +
+    scale_size_manual(values = size_values,
+                      breaks = color_breaks,
+                      labels = color_labels,
+                      name = NULL) +
     # Facets
-    {if(facetsite == TRUE){facet_wrap(~Location_ID, scales = facet_scales)}} +
-    # Upper and lower points
-    # {if(thresh == TRUE){
-    #   geom_hline(data = wdat_curr, aes(yintercept = UpperThreshold_corr, group = "Upper WQ Threshold",
-    #                                    linetype = "Upper WQ Threshold"), lwd = 0.7)}} +
-    # {if(thresh == TRUE){
-    #   geom_hline(data = wdat_curr, aes(yintercept = LowerThreshold_corr, group = "Lower WQ Threshold",
-    #                                    linetype = "Lower WQ Threshold"), lwd = 0.7)}} +
+    {if(facetsite == TRUE){facet_wrap(~site_fac, scales = facet_scales)}} +
     # Labels/Themes/axes
     scale_x_discrete(breaks = xaxis_breaks, drop = F, expand = c(0.04,0.04)) +
     scale_y_continuous(n.breaks = 8) +
@@ -421,12 +396,10 @@ plotWaterBands <- function(park = "all",
     {if(any(gridlines %in% c("grid_x", "both"))){
         theme(panel.grid.major.x = element_line(color = 'grey'),
               panel.grid.minor.x = element_line(color = 'grey'))}} +
-    guides(color = guide_legend(order = 2),
-           fill = guide_legend(order = 1),
-           linetype = guide_legend(order = 3))
-    #)
+    guides(fill = guide_legend(order = 1),
+           color = guide_legend(order = 2)
+    )
 
-     monthly_plot
     final_plot <- if(plotly == TRUE){plotly::ggplotly(monthly_plot, tooltip = "text")} else {monthly_plot}
     return(final_plot)
     }
