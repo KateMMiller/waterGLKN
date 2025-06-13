@@ -4,7 +4,8 @@ Title: Package for importing, querying, summarizing and visualizing GLKN water d
 Version: 0.1.0
 Authors@R: c(person("Kate", "Miller", role = c("aut", "cre"), email = "kathryn_miller@nps.gov",
     comment = c(ORCID = "0000-0001-8823-6373")),
-             person('Rick', 'Damstra', role = 'aut'))
+             person('Rick', 'Damstra', role = 'aut'),
+             person('Cyrus', 'Hester', role = 'aut'))
 Description: This package contains functions that import the GLKN water data package 
     downloaded from IRMA.NPS.GOV to perform routine queries, data summaries and  
     visualizations. 
