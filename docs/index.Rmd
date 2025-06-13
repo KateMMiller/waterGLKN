@@ -63,10 +63,10 @@ parameter = c("ANC", "NH3", "pH", "Temp_C", "SDepth_m", "Discharge_csf", "Penetr
 <h4><b>Step 1.</b> Install R, RStudio, and RTools44 in Software Center</h4>
 Note that RTools is needed to install R packages from GitHub, and it only works with R versions 4.4.x. While R 4.5 is available on Software Center, the matching RTools45 isn't available yet. Until that changes, link RStudio to the latest version of R 4.4 (I'm currently using R 4.4.3).
 
-<details><summary class = 'drop'>Troubleshooting Build Tools</summary>
+<details><summary class = 'drop'><span style='font-weight:normal;'>Troubleshooting Build Tools</span></summary>
 Unfortunately Software Center installs RTools44 in C:/Program Files/, not C:/, which is where RStudio looks for it by default. The following code helps RStudio find RTools. You may occasionally have to rerun this code (except for the `usethis` line), so keep it handy. You know when you have to rerun the code when you try to rebuild a package, and a window pops up to ask if you want to install missing build files.
 
-<b>First install the `usethis` package if you don't have it installed. Then set .Renviron to find RTools on opening by opening the .Renviron file (second line), and pasting the code in the remaining lines into that file, and saving it. Now close/reopen RStudio, and you should be all set.</b>
+First install the `usethis` package if you don't have it installed. Then set .Renviron to find RTools on opening by opening the .Renviron file (second line), and pasting the code in the remaining lines into that file, and saving it. Now close/reopen RStudio, and you should be all set.
 ```{r eval = F}
 install.packages('usethis')
 usethis::edit_r_environ()
@@ -85,7 +85,7 @@ Note that whenever the `waterGLKN` package is updated, you can rerun this code t
 library(devtools)
 install_github("KateMMiller/waterGLKN")
 ```
-<details><summary class = 'drop'>Troubleshooting GitHub package installation</summary>
+<details><summary class = 'drop'><span style='font-weight:normal;'>Troubleshooting GitHub package installation</span></summary>
 If you’re unable to install the R package via GitHub (often an error about permission being denied, download the following script from my OneDrive and open it in R: <a href = "https://doimspp-my.sharepoint.com/:u:/g/personal/kmmiller_nps_gov/ETaknusoEfVOs9tbIbx6QYEBre0WI-_xxi-C0M3JCX_xfw?e=n00UCO">fix_TLS_inspection.R</a>
 
 Once this script is open in R Studio, press Control + A to select all of the code. Then Control + Enter to run all of the code. Assuming you don’t return any errors, you should be able to install from GitHub. Now try to reinstall waterGLKN. If you're still running into issues, it could be that `devtools` is missing some package dependencies, which the error message will often mention. Install any missing packages and then try installing waterGLKN again. If you're still not successful, send me a screenshot of the error and I'll help you troubleshoot. 

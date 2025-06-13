@@ -619,7 +619,7 @@ link RStudio to the latest version of R 4.4 (I’m currently using R
 4.4.3).</p>
 <details>
 <summary class="drop">
-Troubleshooting Build Tools
+<span style="font-weight:normal;">Troubleshooting Build Tools</span>
 </summary>
 <p>Unfortunately Software Center installs RTools44 in C:/Program Files/,
 not C:/, which is where RStudio looks for it by default. The following
@@ -628,11 +628,11 @@ code (except for the <code>usethis</code> line), so keep it handy. You
 know when you have to rerun the code when you try to rebuild a package,
 and a window pops up to ask if you want to install missing build
 files.</p>
-<p><b>First install the <code>usethis</code> package if you don’t have
-it installed. Then set .Renviron to find RTools on opening by opening
-the .Renviron file (second line), and pasting the code in the remaining
+<p>First install the <code>usethis</code> package if you don’t have it
+installed. Then set .Renviron to find RTools on opening by opening the
+.Renviron file (second line), and pasting the code in the remaining
 lines into that file, and saving it. Now close/reopen RStudio, and you
-should be all set.</b></p>
+should be all set.</p>
 <pre class="r"><code>install.packages(&#39;usethis&#39;)
 usethis::edit_r_environ()
 Sys.setenv(PATH = paste(&quot;C:\\PROGRA~1\\Rtools44\\bin&quot;, Sys.getenv(&quot;PATH&quot;), sep=&quot;;&quot;))
@@ -652,7 +652,8 @@ can rerun this code to install the latest version.</p>
 install_github(&quot;KateMMiller/waterGLKN&quot;)</code></pre>
 <details>
 <summary class="drop">
-Troubleshooting GitHub package installation
+<span style="font-weight:normal;">Troubleshooting GitHub package
+installation</span>
 </summary>
 <p>If you’re unable to install the R package via GitHub (often an error
 about permission being denied, download the following script from my
@@ -4037,7 +4038,7 @@ Get Secchi depths for all sites in ISRO and VOYA for all years.
 </p>
 <pre class="r"><code>secchi &lt;- getResults(park = c(&quot;ISRO&quot;, &quot;VOYA&quot;), parameter = &quot;Secchi_m&quot;)
 print_head(secchi)</code></pre>
-<table class=" lightable-classic" style="font-size: 12px; color: black; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<table class=" lightable-classic" style="font-size: 12px; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
