@@ -10,8 +10,7 @@ sumEvents(
   site_type = "all",
   sample_depth = "all",
   years = 2007:format(Sys.Date(), "\%Y"),
-  active = TRUE,
-  months = 4:11
+  active = TRUE
 )
 }
 \arguments{
@@ -64,9 +63,6 @@ If "surface", only returns data from the uppermost sample.}
 \item{active}{Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
 locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
 least one sampling event between 2014 and 2024. See "./scripts/active_sites.R" for more details.}
-
-\item{months}{Numeric. Months to query by number. Accepted values range from 1:12. Default month range is
-4:11, as most non-QAQC sample events occur between the months of April and November.}
 
 \item{parameter}{Specify the parameter(s) to return. Note if additional parameters are added to the Results view,
 they need to be added as accepted values in this function. Current accepted values are:

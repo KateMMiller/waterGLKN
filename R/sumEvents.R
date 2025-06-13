@@ -54,9 +54,6 @@
 #'
 #' @param years Numeric. Years to query. Accepted values start at 2007.
 #'
-#' @param months Numeric. Months to query by number. Accepted values range from 1:12. Default month range is
-#' 4:11, as most non-QAQC sample events occur between the months of April and November.
-#'
 #' @param active Logical. If TRUE (Default), only returns actively monitored locations. If FALSE, returns all
 #' locations that have been monitored at least once since 2007. Active sites are defined as sites that have at
 #' least one sampling event between 2014 and 2024. See "./scripts/active_sites.R" for more details.
@@ -98,8 +95,7 @@ sumEvents <- function(park = "all",
                       site_type = "all",
                       sample_depth = 'all',
                       years = 2007:format(Sys.Date(), "%Y"),
-                      active = TRUE,
-                      months = 4:11){
+                      active = TRUE){
 
   #-- Error handling --
   park <- match.arg(park, several.ok = TRUE,
@@ -131,12 +127,11 @@ sumEvents <- function(park = "all",
   if(any(site == "all")){site = c(Rivers, Lakes, Impoundments)} else {site}
 
   stopifnot(class(years) %in% c("numeric", "integer"), years >= 2007)
-  stopifnot(class(months) %in% c("numeric", "integer"), months %in% c(1:12))
   stopifnot(class(active) == "logical")
 
   wdat <-
     getResults(park = park, site = site, site_type = site_type, sample_type = "VS", years = years,
-               months = months, active = active, parameter = parameter, sample_depth = sample_depth,
+               active = active, parameter = parameter, sample_depth = sample_depth,
                include_censored = TRUE)
 
   evs <- wdat |>
@@ -148,39 +143,38 @@ sumEvents <- function(park = "all",
               num_years = sum(!is.na(year)),
               .groups = 'drop')
 
-wdat$value_type <- ifelse(wdat$censored == TRUE, 'cens', "real")
+  wdat$value_type <- ifelse(wdat$censored == TRUE, 'cens', "real")
 
-wdat2 <- left_join(evs, wdat, by = c("Park_Code", "Location_ID"))
-wdat2$mon <- factor(format(as.Date(wdat2$sample_date, format = c("%Y-%m-%d")), "%b"),
-                    levels = month.abb, ordered = T)
-wdat2$mon <- wdat2$mon[,drop = T]
+  wdat2 <- left_join(evs, wdat, by = c("Park_Code", "Location_ID"))
+  wdat2$mon <- factor(format(as.Date(wdat2$sample_date, format = c("%Y-%m-%d")), "%b"),
+                      levels = month.abb, ordered = T)
+  wdat2$mon <- wdat2$mon[,drop = T]
 
-samp_tab <- wdat2 |> group_by(Park_Code, Location_ID, SiteType, mon, value_type, param_name,
-                              year_start, year_latest, num_years) |>
-  summarize(num_samples = sum(!is.na(year)),
-            .groups = "drop") |>
-  pivot_wider(names_from = c(mon, value_type), values_from = num_samples, values_fill = 0)
+  samp_tab <- wdat2 |> group_by(Park_Code, Location_ID, SiteType, mon, value_type, param_name,
+                                year_start, year_latest, num_years) |>
+    summarize(num_samples = sum(!is.na(year)), .groups = "drop") |>
+    pivot_wider(names_from = c(mon, value_type), values_from = num_samples, values_fill = 0)
 
-head(samp_tab)
+  # Add month columns that could be missing (mostly cens)
+  all_cols <- c("Park_Code", "Location_ID", "value_type" ,"param_name",
+                "year_start", "year_latest", "num_years",
+                "Apr_real", "Apr_cens", "May_real", "May_cens", "Jun_real", "Jun_cens",
+                "Jul_real", "Jul_cens", "Aug_real", "Aug_cens", "Sep_real", "Sep_cens",
+                "Oct_real", "Oct_cens")
 
-# Add month columns that could be missing (mostly cens)
-all_cols <- c("Park_Code", "Location_ID", "value_type" ,"param_name",
-              "year_start", "year_latest", "num_years",
-              "May_real", "May_cens", "Jun_real", "Jun_cens", "Jul_real", "Jul_cens",
-              "Aug_real", "Aug_cens", "Sep_real", "Sep_cens", "Oct_real", "Oct_cens")
+  missing <- setdiff(all_cols, names(samp_tab))
 
-missing <- setdiff(all_cols, names(samp_tab))
+  samp_tab[missing] <- 0
 
-samp_tab[missing] <- 0
+  samp_tab2 <- samp_tab[samp_tab$num_years > 0,]
 
-samp_tab_final <- samp_tab |>
-  mutate(year_range = paste0(year_start, " \U2013 ", year_latest)) |>
-  select(Park_Code, SiteType, Location_ID,  param_name, year_range,
-         num_years,
-         May = May_real, Jun = Jun_real, Jul = Jul_real,
-         Aug = Aug_real, Sep = Sep_real, Oct = Oct_real,
-         May_cens, Jun_cens, Jul_cens, Aug_cens, Sep_cens,
-         Oct_cens) |>
+  samp_tab_final <- samp_tab2 |>
+    mutate(year_range = paste0(year_start, " \U2013 ", year_latest)) |>
+    select(Park_Code, SiteType, Location_ID,  param_name, year_range,
+           num_years, Apr = Apr_real, May = May_real, Jun = Jun_real,
+           Jul = Jul_real, Aug = Aug_real, Sep = Sep_real, Oct = Oct_real,
+           Apr_cens, May_cens, Jun_cens, Jul_cens, Aug_cens, Sep_cens,
+           Oct_cens) |>
   arrange(Park_Code, SiteType, Location_ID, param_name)
 
 return(samp_tab_final)
