@@ -60,7 +60,21 @@ parameter = c("ANC", "NH3", "pH", "Temp_C", "SDepth_m", "Discharge_csf", "Penetr
 ### Getting started {.tabset}
 
 #### Installation
-<h4><b>Step 1.</b> Install R, RStudio, and RTools in Software Center</h4>
+<h4><b>Step 1.</b> Install R, RStudio, and RTools44 in Software Center</h4>
+Note that RTools is needed to install R packages from GitHub, and it only works with R versions 4.4.x. While R 4.5 is available on Software Center, the matching RTools45 isn't available yet. Until that changes, link RStudio to the latest version of R 4.4 (I'm currently using R 4.4.3).
+
+<details><summary class = 'drop'>Troubleshooting Build Tools</summary>
+Unfortunately Software Center installs RTools44 in C:/Program Files/, not C:/, which is where RStudio looks for it by default. The following code helps RStudio find RTools. You may occasionally have to rerun this code (except for the `usethis` line), so keep it handy. You know when you have to rerun the code when you try to rebuild a package, and a window pops up to ask if you want to install missing build files.
+
+<b>First install the `usethis` package if you don't have it installed. Then set .Renviron to find RTools on opening by opening the .Renviron file (second line), and pasting the code in the remaining lines into that file, and saving it. Now close/reopen RStudio, and you should be all set.</b>
+```{r eval = F}
+install.packages('usethis')
+usethis::edit_r_environ()
+Sys.setenv(PATH = paste("C:\\PROGRA~1\\Rtools44\\bin", Sys.getenv("PATH"), sep=";"))
+Sys.setenv(BINPREF = "C:\\PROGRA~1\\Rtools44\\mingw_$(WIN)\\bin\\")
+```
+</details>
+<br>
 <h4><b>Step 2.</b> Install devtools package in R:</h4>
 ```{r, eval = F, class.source = "indent"}
 install.packages('devtools')
@@ -71,6 +85,12 @@ Note that whenever the `waterGLKN` package is updated, you can rerun this code t
 library(devtools)
 install_github("KateMMiller/waterGLKN")
 ```
+<details><summary class = 'drop'>Troubleshooting GitHub package installation</summary>
+If you’re unable to install the R package via GitHub (often an error about permission being denied, download the following script from my OneDrive and open it in R: <a href = "https://doimspp-my.sharepoint.com/:u:/g/personal/kmmiller_nps_gov/ETaknusoEfVOs9tbIbx6QYEBre0WI-_xxi-C0M3JCX_xfw?e=n00UCO">fix_TLS_inspection.R</a>
+
+Once this script is open in R Studio, press Control + A to select all of the code. Then Control + Enter to run all of the code. Assuming you don’t return any errors, you should be able to install from GitHub. Now try to reinstall waterGLKN. If you're still running into issues, it could be that `devtools` is missing some package dependencies, which the error message will often mention. Install any missing packages and then try installing waterGLKN again. If you're still not successful, send me a screenshot of the error and I'll help you troubleshoot. 
+</details>
+<br>
 <h4><b>Step 4.</b> Load waterGLKN R package</h4>
 ```{r, class.source = "indent"}
 library(waterGLKN)
@@ -334,39 +354,6 @@ plot_grid(tplot, doplot, pHplot, cnplot)
 </details>
 
 
-#### plotWaterBands()
-This function produces a plot that summarizes the range of historic data compared with current measurements. The function can handle most water quality parameters. Historic measurements are displayed as the min-max values that have ever previously recorded (outermost band), upper and lower 95% distribution and middle 50% distribution (inner quartiles) of values previously recorded (inner bands). The line represents the median value. 
-
-Currently you can only specify one parameter at a time, and one year comparison at a time (i.e. year_current). You can add gridlines to the plot via the gridlines argument. If multiple sites are specified, they will be faceted in the order they were specified. If `include_censored = TRUE`, censored values will be plotted as an asterisk instead of circle. 
-
-[Not yet enabled--]Values that exceed water quality thresholds (where they exist) are plotted as orange and will show an orange point in the legend. Values within WQ thresholds or for parameters without set thresholds are black. You can include threshold lines (default), or remove them, where they make the y axis range too big, via `threshold = FALSE`. [--Not yet enabled].
-
-<p class = 'fxn'>Plot pH in sites in Lake St. Croix for 2023 with gridlines on the y-axis</p>
-```{r message = FALSE, warning = FALSE}
-lksc <- c('SACN_STCR_2.0', 'SACN_STCR_15.8', 'SACN_STCR_20.0')
-plotWaterBands(site = lksc, year_curr = 2023, years_historic = 2007:2022, 
-  parameter = "pH", legend_position = 'right', gridlines = 'grid_y')
-```
-
-<p class = 'fxn'>Plot ChlA in sites in Lake St. Croix for 2023 including censored values, and move legend to bottom.</p>
-```{r message = FALSE, warning = FALSE}
-plotWaterBands(site = lksc, year_curr = 2023, years_historic = 2007:2022, 
-  parameter = "ChlA_ugL", legend_position = 'bottom', include_censored = T)
-```
-
-<p class = 'fxn'>Plot DO in SLBE_01 in 2023 and gridlines on both x and y axes</p>
-```{r message = FALSE, warning = FALSE}
-plotWaterBands(site = "SLBE_01", year_curr = 2023, years_historic = 2007:2022,
-  parameter = "DO_mgL", legend_position = 'right', gridlines = "both")
-```
-
-<p class = 'fxn'>Plot Specific Conductance in ISRO 1-3 sites in 2023 </p>
-```{r message = FALSE, warning = FALSE}
-isro_sites <- c("ISRO_01", "ISRO_02", "ISRO_03")
-plotWaterBands(site = isro_sites, year_curr = 2023, years_historic = 2007:2022, 
-               parameter = "SpecCond_uScm", legend_position = 'bottom')
-```
-
 #### plotScatterPlot()
 This function produces points or loess smoothed lines of 2 variables, filtered on park, site, year, month, and 2 parameters. Works best with Sonde and lab chemistry data, but can also plot Secchi depth and other parameters. By default, only surface measurements are included, although Secchi depth ignores that. To include all sample depths, specify `sample_depth = 'all'`. If multiple sites are specified, they will be plotted on the same figure, unless facet_site = T. Note that if you specify a site and parameter combination that doesn't exist, the function will return an error message instead of an empty plot. Censored values are not permitted in this function.
 
@@ -482,6 +469,39 @@ plotTrend(park = "ISRO", parameter = c('Alkalinity_mgL', "NO2+NO3_ugL", "P_ugL",
           facet_site = F)
 ```
 </details>
+
+#### plotWaterBands()
+This function produces a plot that summarizes the range of historic data compared with current measurements. The function can handle most water quality parameters. Historic measurements are displayed as the min-max values that have ever previously recorded (outermost band), upper and lower 95% distribution and middle 50% distribution (inner quartiles) of values previously recorded (inner bands). The line represents the median value. 
+
+Currently you can only specify one parameter at a time, and one year comparison at a time (i.e. year_current). You can add gridlines to the plot via the gridlines argument. If multiple sites are specified, they will be faceted in the order they were specified. If `include_censored = TRUE`, censored values will be plotted as an asterisk instead of circle. 
+
+[Not yet enabled--]Values that exceed water quality thresholds (where they exist) are plotted as orange and will show an orange point in the legend. Values within WQ thresholds or for parameters without set thresholds are black. You can include threshold lines (default), or remove them, where they make the y axis range too big, via `threshold = FALSE`. [--Not yet enabled].
+
+<p class = 'fxn'>Plot pH in sites in Lake St. Croix for 2023 with gridlines on the y-axis</p>
+```{r message = FALSE, warning = FALSE}
+lksc <- c('SACN_STCR_2.0', 'SACN_STCR_15.8', 'SACN_STCR_20.0')
+plotWaterBands(site = lksc, year_curr = 2023, years_historic = 2007:2022, 
+  parameter = "pH", legend_position = 'right', gridlines = 'grid_y')
+```
+
+<p class = 'fxn'>Plot ChlA in sites in Lake St. Croix for 2023 including censored values, and move legend to bottom.</p>
+```{r message = FALSE, warning = FALSE}
+plotWaterBands(site = lksc, year_curr = 2023, years_historic = 2007:2022, 
+  parameter = "ChlA_ugL", legend_position = 'bottom', include_censored = T)
+```
+
+<p class = 'fxn'>Plot DO in SLBE_01 in 2023 and gridlines on both x and y axes</p>
+```{r message = FALSE, warning = FALSE}
+plotWaterBands(site = "SLBE_01", year_curr = 2023, years_historic = 2007:2022,
+  parameter = "DO_mgL", legend_position = 'right', gridlines = "both")
+```
+
+<p class = 'fxn'>Plot Specific Conductance in ISRO 1-3 sites in 2023 </p>
+```{r message = FALSE, warning = FALSE}
+isro_sites <- c("ISRO_01", "ISRO_02", "ISRO_03")
+plotWaterBands(site = isro_sites, year_curr = 2023, years_historic = 2007:2022, 
+               parameter = "SpecCond_uScm", legend_position = 'bottom')
+```
 
 ### Summary Functions {.tabset}
 #### sumEvents()
