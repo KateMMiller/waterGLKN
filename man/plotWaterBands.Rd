@@ -143,4 +143,11 @@ plotWaterBands(site = lkst, year_curr = 2023, years_historic = 2007:2022,
 plotWaterBands(park = "SLBE", year_curr = 2023, years_historic = 2007:2022,
   parameter = "DOsat_pct", legend_position = 'right')
 
+# Plot ChlA in Lake St. Croix sites with legend on the bottom
+lksc <- c('SACN_STCR_2.0', 'SACN_STCR_15.8', 'SACN_STCR_20.0')
+plotWaterBands(site = lksc, year_curr = 2023, years_historic = 2007:2022,
+               parameter = "ChlA_ugL", legend_position = 'bottom', gridlines = 'grid_y',
+               include_censored = T)
+
+
 }

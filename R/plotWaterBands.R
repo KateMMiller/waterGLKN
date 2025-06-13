@@ -133,6 +133,13 @@
 #' plotWaterBands(park = "SLBE", year_curr = 2023, years_historic = 2007:2022,
 #'   parameter = "DOsat_pct", legend_position = 'right')
 #'
+#' # Plot ChlA in Lake St. Croix sites with legend on the bottom
+#' lksc <- c('SACN_STCR_2.0', 'SACN_STCR_15.8', 'SACN_STCR_20.0')
+#' plotWaterBands(site = lksc, year_curr = 2023, years_historic = 2007:2022,
+#'                parameter = "ChlA_ugL", legend_position = 'bottom', gridlines = 'grid_y',
+#'                include_censored = T)
+#'
+#'
 #' @export
 
 plotWaterBands <- function(park = "all",
@@ -389,6 +396,7 @@ plotWaterBands <- function(park = "all",
           axis.ticks = element_line(color = "#696969", linewidth = 0.4),
           legend.key = element_blank(),
           legend.spacing.y = unit(-0.2, "cm"),
+          legend.box = 'vertical',
           legend.position = legend_position) +
     {if(any(gridlines %in% c("grid_y", "both"))){
          theme(panel.grid.major.y = element_line(color = 'grey'),
