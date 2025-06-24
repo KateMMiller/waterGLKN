@@ -55,7 +55,7 @@ parameter = c("ANC", "NH3", "pH", "Temp_C", "SDepth_m", "Discharge_csf", "Penetr
 ... = NULL; smooth = F; layers = c("points", "lines"); threshold = T; legend_position = 'bottom'; span = 0.6
 ```
 
-## Using the waterGLKN R package {.tabset .tabset-pills}
+## Using the `waterGLKN` R package {.tabset .tabset-pills}
 
 ### Getting started {.tabset}
 
@@ -63,7 +63,7 @@ parameter = c("ANC", "NH3", "pH", "Temp_C", "SDepth_m", "Discharge_csf", "Penetr
 <h4><b>Step 1.</b> Install R, RStudio, and RTools44 in Software Center</h4>
 Note that RTools is needed to install R packages from GitHub, and it only works with R versions 4.4.x. While R 4.5 is available on Software Center, the matching RTools45 isn't available yet. Until that changes, link RStudio to the latest version of R 4.4 (I'm currently using R 4.4.3).
 
-<details><summary class = 'drop'><span style='font-weight:normal;'>Troubleshooting Build Tools</span></summary>
+<details><summary class = 'drop'><span style='font-weight:normal;color:red;'>Troubleshooting Build Tools</span></summary>
 Unfortunately Software Center installs RTools44 in C:/Program Files/, not C:/, which is where RStudio looks for it by default. The following code helps RStudio find RTools. You may occasionally have to rerun this code (except for the `usethis` line), so keep it handy. You know when you have to rerun the code when you try to rebuild a package, and a window pops up to ask if you want to install missing build files.
 
 First install the `usethis` package if you don't have it installed. Then set .Renviron to find RTools on opening by opening the .Renviron file (second line), and pasting the code in the remaining lines into that file, and saving it. Now close/reopen RStudio, and you should be all set.
@@ -76,23 +76,23 @@ Sys.setenv(BINPREF = "C:\\PROGRA~1\\Rtools44\\mingw_$(WIN)\\bin\\")
 </details>
 <br>
 <h4><b>Step 2.</b> Install devtools package in R:</h4>
-```{r, eval = F, class.source = "indent"}
+```{r, eval = F}
 install.packages('devtools')
 ```
-<h4><b>Step 3.</b> Install waterGLKN from github</h4>
+<h4><b>Step 3.</b> Install `waterGLKN` from github</h4>
 Note that whenever the `waterGLKN` package is updated, you can rerun this code to install the latest version.
-```{r, eval = F, class.source = "indent"}
+```{r, eval = F}
 library(devtools)
 install_github("KateMMiller/waterGLKN")
 ```
-<details><summary class = 'drop'><span style='font-weight:normal;'>Troubleshooting GitHub package installation</span></summary>
-If you’re unable to install the R package via GitHub (often an error about permission being denied, download the following script from my OneDrive and open it in R: <a href = "https://doimspp-my.sharepoint.com/:u:/g/personal/kmmiller_nps_gov/ETaknusoEfVOs9tbIbx6QYEBre0WI-_xxi-C0M3JCX_xfw?e=n00UCO">fix_TLS_inspection.R</a>
+<details><summary class = 'drop'><span style='font-weight:normal;color:red;'>Troubleshooting GitHub package installation</span></summary>
+If you’re unable to install the R package via GitHub (often an error about permission being denied), download the following script from my OneDrive and open it in R: <a href = "https://doimspp-my.sharepoint.com/:u:/g/personal/kmmiller_nps_gov/ETaknusoEfVOs9tbIbx6QYEBre0WI-_xxi-C0M3JCX_xfw?e=n00UCO">fix_TLS_inspection.R</a>
 
-Once this script is open in R Studio, press Control + A to select all of the code. Then Control + Enter to run all of the code. Assuming you don’t return any errors, you should be able to install from GitHub. Now try to reinstall waterGLKN. If you're still running into issues, it could be that `devtools` is missing some package dependencies, which the error message will often mention. Install any missing packages and then try installing waterGLKN again. If you're still not successful, send me a screenshot of the error and I'll help you troubleshoot. 
+Once this script is open in R Studio, press Control + A to select all of the code. Then Control + Enter to run all of the code. Assuming you don’t return any errors, you should be able to install from GitHub. Now try to reinstall `waterGLKN`. If you're still running into issues, it could be that `devtools` is missing some package dependencies, which the error message will often mention. Install any missing packages and then try installing `waterGLKN` again. If you're still not successful, send me a screenshot of the error and I'll help you troubleshoot. 
 </details>
 <br>
-<h4><b>Step 4.</b> Load waterGLKN R package</h4>
-```{r, class.source = "indent"}
+<h4><b>Step 4.</b> Load `waterGLKN` R package</h4>
+```{r}
 library(waterGLKN)
 ```
 <h4><b>Step 5.</b> Import data</h4>
@@ -147,7 +147,7 @@ If you want to use the `print_head()` function that shows output in the markdown
 ```{r}
 print_head <- function(df){
   nrows <- min(6, nrow(df))
-  knitr::kable(df[1:nrows,]) |> #, table.attr = "style='width:60%;'") |> 
+  knitr::kable(df[1:nrows,]) |>  
     kableExtra::kable_classic(full_width = F, font_size = 12, 
                               bootstrap_options = c("condensed"))
 }
@@ -155,18 +155,18 @@ print_head <- function(df){
 ```
 #### Getting help
 <h4><b>Getting (and improving) help</b></h4>
-The functions in `waterGLKN` have help documentation like any R package. To view the help, you can go to the Packages tab and click on waterGLKN (see below). That will show you all the functions in the package. Clicking on individual functions will take you to the help documentation for that function. 
+The functions in `waterGLKN` have help documentation like any R package. To view the help, you can go to the Packages tab and click on `waterGLKN` (see below). That will show you all the functions in the package. Clicking on individual functions will take you to the help documentation for that function. 
 ```{r echo = F, out.width = 500, fig.align = 'center'}
 knitr::include_graphics("C:/NETN/R_Dev/waterGLKN/docs/www/finding_R_package.jpg")
 ```
 
 <p class = 'fxn'>You can also see the help of a function by running, for example: </p>
-```{r, class.source = 'indent', eval = F}
+```{r, eval = F}
 ?importData
 ```
 
 <p class = 'fxn'>If `waterGLKN` isn't loaded yet, you'd run: </p>
-```{r, class.source = 'indent', eval = F}
+```{r, eval = F}
 ?waterGLKN::importData
 ```
 
