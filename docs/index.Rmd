@@ -105,25 +105,25 @@ importData(type = 'zip', filepath = c(river_zip, lake_zip))
 
 You can download GLKN water packages from DataStore using the `NPSutils` package, or you can go to DataStore on IRMA and download the data packages. Code to download via `NPSutils` is below. Note, however, that the `NPSutils` package has a lot of dependencies, some of which are circular and takes multiple tries to install. I'm working on a slimmed down package that performs the same function, but for now, I just download them from DataStore. Once the data package is on your computer, you can run the `importData()` function.
 
-```{r eval = F}
+```{r eval = F, include = T}
 # Download lakes and rivers data package from DataStore
 devtools::install_github("nationalparkservice/NPSutils") # might take a few tries to install
 NPSutils::get_data_packages(c("2306516", "2309369"))
 ```
 
-<span style='color:#1942B5;'><b>Option 1.</b> Import latest Rivers data package by specifying the folder where the unzipped csvs live.</span
-```{r, eval = F}
+<span style='color:#1942B5;'><b>Option 1.</b> Import latest Rivers data package by specifying the folder where the unzipped csvs live.</span>
+```{r, eval = F, include = T}
 importData(type = 'csv', filepath = "../data/GLKN_water/2309639") # filepath is the path on my computer
 ```
 
-<span style='color:#1942B5;'><b>Option 1.</b> Import latest Lakes data package by specifying the folder where the unzipped csvs liv.</span
-```{r eval = F}
+<span style='color:#1942B5;'><b>Option 2.</b> Import latest Lakes data package by specifying the folder where the unzipped csvs live.</span>
+```{r eval = F, include = T}
 importData(type = 'csv', filepath = "../data/GLKN_water/2306516") # filepath is the path on my computer
 ```
 
 <span style='color:#1942B5;'><b>Option 3.</b> Import both Rivers and Lakes data packages using a zipped file of each data package.</span>
 By importing both simultaneously, each of the views (e.g. Locations, Results, etc.) are row bound to include both rivers and lakes data in one view. If views between the Rivers and Lakes data packages ever have different columns, this approach won't work. 
-```{r eval = F}
+```{r eval = F, include = T}
 river_zip = ("../data/GLKN_water/records-2309369.zip")
 lake_zip = ("../data/GLKN_water/records-2306516.zip")
 importData(type = 'zip', filepath = c(river_zip, lake_zip))

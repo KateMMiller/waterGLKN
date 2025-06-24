@@ -699,8 +699,13 @@ devtools::install_github(&quot;nationalparkservice/NPSutils&quot;) # might take 
 NPSutils::get_data_packages(c(&quot;2306516&quot;, &quot;2309369&quot;))</code></pre>
 <p><span style="color:#1942B5;"><b>Option 1.</b> Import latest Rivers
 data package by specifying the folder where the unzipped csvs
-live.</span><b>Option 1.</b> Import latest Lakes data package by
-specifying the folder where the unzipped csvs liv.</span><b>Option 3.</b> Import both Rivers and
+live.</span></p>
+<pre class="r"><code>importData(type = &#39;csv&#39;, filepath = &quot;../data/GLKN_water/2309639&quot;) # filepath is the path on my computer</code></pre>
+<p><span style="color:#1942B5;"><b>Option 2.</b> Import latest Lakes
+data package by specifying the folder where the unzipped csvs
+live.</span></p>
+<pre class="r"><code>importData(type = &#39;csv&#39;, filepath = &quot;../data/GLKN_water/2306516&quot;) # filepath is the path on my computer</code></pre>
+<p><span style="color:#1942B5;"><b>Option 3.</b> Import both Rivers and
 Lakes data packages using a zipped file of each data package.</span> By
 importing both simultaneously, each of the views (e.g. Locations,
 Results, etc.) are row bound to include both rivers and lakes data in
@@ -4038,7 +4043,7 @@ Get Secchi depths for all sites in ISRO and VOYA for all years.
 </p>
 <pre class="r"><code>secchi &lt;- getResults(park = c(&quot;ISRO&quot;, &quot;VOYA&quot;), parameter = &quot;Secchi_m&quot;)
 print_head(secchi)</code></pre>
-<table class=" lightable-classic" style="font-size: 12px; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<table class=" lightable-classic" style="font-size: 12px; color: black; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">

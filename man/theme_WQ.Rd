@@ -2,7 +2,7 @@
 % Please edit documentation in R/theme_WQ.R
 \name{theme_WQ}
 \alias{theme_WQ}
-\title{theme_WQ: custom ggplot2 theme for waterNETN}
+\title{theme_WQ: custom ggplot2 theme for waterGLKN}
 \usage{
 theme_WQ()
 }
@@ -10,7 +10,7 @@ theme_WQ()
 This function must be used in conjunction with a ggplot object
 }
 \description{
-This function customizes a theme for plotting NETN water data, including removing the
+This function customizes a theme for plotting GLKN water data, including removing the
 default panel grids from ggplot2 figures.
 }
 \examples{

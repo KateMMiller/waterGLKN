@@ -1,8 +1,8 @@
-#' @title theme_WQ: custom ggplot2 theme for waterNETN
+#' @title theme_WQ: custom ggplot2 theme for waterGLKN
 #'
 #' @import ggplot2
 #'
-#' @description This function customizes a theme for plotting NETN water data, including removing the
+#' @description This function customizes a theme for plotting GLKN water data, including removing the
 #' default panel grids from ggplot2 figures.
 #'
 #' @return This function must be used in conjunction with a ggplot object
