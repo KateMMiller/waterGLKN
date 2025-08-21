@@ -618,7 +618,7 @@ only works with R versions 4.4.x. While R 4.5 is available on Software
 Center, the matching RTools45 isn’t available yet. Until that changes,
 link RStudio to the latest version of R 4.4 (I’m currently using R
 4.4.3).</p>
-<details>
+<details open>
 <summary class="drop">
 <span style="font-weight:normal;color:red;">Troubleshooting Build
 Tools</span>
@@ -652,7 +652,7 @@ Sys.setenv(BINPREF = &quot;C:\\PROGRA~1\\Rtools44\\mingw_$(WIN)\\bin\\&quot;)</c
 can rerun this code to install the latest version.</p>
 <pre class="r"><code>library(devtools)
 install_github(&quot;KateMMiller/waterGLKN&quot;)</code></pre>
-<details>
+<details open>
 <summary class="drop">
 <span style="font-weight:normal;color:red;">Troubleshooting GitHub
 package installation</span>
@@ -1174,7 +1174,7 @@ years (default), and only return important columns.
 </p>
 <pre class="r"><code>res &lt;- getResults()
 print_head(res)</code></pre>
-<table class=" lightable-classic" style="font-size: 12px; color: black; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<table class=" lightable-classic" style="font-size: 12px; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -5464,7 +5464,7 @@ Summarize only lake events for SACN for all years
 </p>
 <pre class="r"><code>sacn_lk &lt;- sumEvents(park = &quot;SACN&quot;, site_type = &quot;lake&quot;)
 print_head(sacn_lk)</code></pre>
-<table class=" lightable-classic" style="font-size: 12px; color: black; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<table class=" lightable-classic" style="font-size: 12px; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
