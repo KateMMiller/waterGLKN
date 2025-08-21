@@ -66,10 +66,18 @@ Note that RTools is needed to install R packages from GitHub, and it only works 
 <details open><summary class = 'drop'><span style='font-weight:normal;color:red;'>Troubleshooting Build Tools</span></summary>
 Unfortunately Software Center installs RTools44 in C:/Program Files/, not C:/, which is where RStudio looks for it by default. The following code helps RStudio find RTools. You may occasionally have to rerun this code (except for the `usethis` line), so keep it handy. You know when you have to rerun the code when you try to rebuild a package, and a window pops up to ask if you want to install missing build files.
 
-First install the `usethis` package if you don't have it installed. Then set .Renviron to find RTools on opening by opening the .Renviron file (second line), and pasting the code in the remaining lines into that file, and saving it. Now close/reopen RStudio, and you should be all set.
+RTools step 1. Install the `usethis` package if you don't already have it installed. 
 ```{r eval = F}
 install.packages('usethis')
+```
+
+RTools step 2. Open the .Renviron file by running the line of code below. 
+```{r eval = F}
 usethis::edit_r_environ()
+```
+
+RTools step 3. Copy the following text and paste it into the .Renviron file, save, then close/reopen RStudio. You don't need to run anything for this step. Copy/paste are all you need to do.
+```{r eval = F}
 Sys.setenv(PATH = paste("C:\\PROGRA~1\\Rtools44\\bin", Sys.getenv("PATH"), sep=";"))
 Sys.setenv(BINPREF = "C:\\PROGRA~1\\Rtools44\\mingw_$(WIN)\\bin\\")
 ```
@@ -79,8 +87,14 @@ Sys.setenv(BINPREF = "C:\\PROGRA~1\\Rtools44\\mingw_$(WIN)\\bin\\")
 ```{r, eval = F}
 install.packages('devtools')
 ```
-<h4><b>Step 3.</b> Install `waterGLKN` from github</h4>
-Note that whenever the `waterGLKN` package is updated, you can rerun this code to install the latest version.
+<br>
+
+<h4><b>Step 3.</b> Install `waterGLKN` from GitHub</h4>
+<b style="color:#1942B5;">You must have a GitHub login and be logged into GitHub to install packages from GitHub and for this step to work</b>
+
+Once you've successfully completed Steps 1-3, you should only have to repeat them if you have a new computer or if you move to R 4.5 or higher (note: R 4.5 will require installing RTools45). 
+
+Whenever the `waterGLKN` package is updated, you can rerun the code below to install the latest version.
 ```{r, eval = F}
 library(devtools)
 install_github("KateMMiller/waterGLKN")
@@ -89,12 +103,14 @@ install_github("KateMMiller/waterGLKN")
 If you’re unable to install the R package via GitHub (often an error about permission being denied), download the following script from my OneDrive and open it in R: <a href = "https://doimspp-my.sharepoint.com/:u:/g/personal/kmmiller_nps_gov/ETaknusoEfVOs9tbIbx6QYEBre0WI-_xxi-C0M3JCX_xfw?e=n00UCO">fix_TLS_inspection.R</a>
 
 Once this script is open in R Studio, press Control + A to select all of the code. Then Control + Enter to run all of the code. Assuming you don’t return any errors, you should be able to install from GitHub. Now try to reinstall `waterGLKN`. If you're still running into issues, it could be that `devtools` is missing some package dependencies, which the error message will often mention. Install any missing packages and then try installing `waterGLKN` again. If you're still not successful, send me a screenshot of the error and I'll help you troubleshoot. 
+
 </details>
 <br>
 <h4><b>Step 4.</b> Load `waterGLKN` R package</h4>
 ```{r}
 library(waterGLKN)
 ```
+<br>
 <h4><b>Step 5.</b> Import data</h4>
 Note that R is not able to connect to files on Sharepoint or MS Teams (b/c Teams also stores all files on Sharepoint). That means you need to store data package files on your local machine or on a server. The default option for importing data will add the data package views (i.e., flatfiles) to an environment called GLKN_WQ to your Environment work space (i.e. Environment tab in top right panel). If you would rather import each individual view into your R session, specify with the new_env argument (e.g., `importData(new_env = F)`).
 ```{r echo = F, results = 'hide', include = F}
@@ -128,7 +144,7 @@ river_zip = ("../data/GLKN_water/records-2309369.zip")
 lake_zip = ("../data/GLKN_water/records-2306516.zip")
 importData(type = 'zip', filepath = c(river_zip, lake_zip))
 ```
-
+<br>
 <h4><b>Step 6.</b> Play with the data </h4>
 The functions in the `waterGLKN` package are designed to work with the views, and are the best way to interact with the data to query by park, site, site type, year, parameter, etc. However, if you want to view the raw data, and you imported the data into the GLKN_WQ environment, you can access them with the code below:
 ```{r eval = F}

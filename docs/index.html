@@ -630,14 +630,16 @@ code (except for the <code>usethis</code> line), so keep it handy. You
 know when you have to rerun the code when you try to rebuild a package,
 and a window pops up to ask if you want to install missing build
 files.</p>
-<p>First install the <code>usethis</code> package if you don’t have it
-installed. Then set .Renviron to find RTools on opening by opening the
-.Renviron file (second line), and pasting the code in the remaining
-lines into that file, and saving it. Now close/reopen RStudio, and you
-should be all set.</p>
-<pre class="r"><code>install.packages(&#39;usethis&#39;)
-usethis::edit_r_environ()
-Sys.setenv(PATH = paste(&quot;C:\\PROGRA~1\\Rtools44\\bin&quot;, Sys.getenv(&quot;PATH&quot;), sep=&quot;;&quot;))
+<p>RTools step 1. Install the <code>usethis</code> package if you don’t
+already have it installed.</p>
+<pre class="r"><code>install.packages(&#39;usethis&#39;)</code></pre>
+<p>RTools step 2. Open the .Renviron file by running the line of code
+below.</p>
+<pre class="r"><code>usethis::edit_r_environ()</code></pre>
+<p>RTools step 3. Copy the following text and paste it into the
+.Renviron file, save, then close/reopen RStudio. You don’t need to run
+anything for this step. Copy/paste are all you need to do.</p>
+<pre class="r"><code>Sys.setenv(PATH = paste(&quot;C:\\PROGRA~1\\Rtools44\\bin&quot;, Sys.getenv(&quot;PATH&quot;), sep=&quot;;&quot;))
 Sys.setenv(BINPREF = &quot;C:\\PROGRA~1\\Rtools44\\mingw_$(WIN)\\bin\\&quot;)</code></pre>
 </details>
 <br>
@@ -645,11 +647,18 @@ Sys.setenv(BINPREF = &quot;C:\\PROGRA~1\\Rtools44\\mingw_$(WIN)\\bin\\&quot;)</c
 <b>Step 2.</b> Install devtools package in R:
 </h4>
 <pre class="r"><code>install.packages(&#39;devtools&#39;)</code></pre>
+<p><br></p>
 <h4>
-<b>Step 3.</b> Install <code>waterGLKN</code> from github
+<b>Step 3.</b> Install <code>waterGLKN</code> from GitHub
 </h4>
-<p>Note that whenever the <code>waterGLKN</code> package is updated, you
-can rerun this code to install the latest version.</p>
+<p><b style="color:#1942B5;">You must have a GitHub login and be logged
+into GitHub to install packages from GitHub and for this step to
+work</b></p>
+<p>Once you’ve successfully completed Steps 1-3, you should only have to
+repeat them if you have a new computer or if you move to R 4.5 or higher
+(note: R 4.5 will require installing RTools45).</p>
+<p>Whenever the <code>waterGLKN</code> package is updated, you can rerun
+the code below to install the latest version.</p>
 <pre class="r"><code>library(devtools)
 install_github(&quot;KateMMiller/waterGLKN&quot;)</code></pre>
 <details open>
@@ -661,21 +670,22 @@ package installation</span>
 about permission being denied), download the following script from my
 OneDrive and open it in R:
 <a href="https://doimspp-my.sharepoint.com/:u:/g/personal/kmmiller_nps_gov/ETaknusoEfVOs9tbIbx6QYEBre0WI-_xxi-C0M3JCX_xfw?e=n00UCO">fix_TLS_inspection.R</a></p>
-Once this script is open in R Studio, press Control + A to select all of
-the code. Then Control + Enter to run all of the code. Assuming you
+<p>Once this script is open in R Studio, press Control + A to select all
+of the code. Then Control + Enter to run all of the code. Assuming you
 don’t return any errors, you should be able to install from GitHub. Now
 try to reinstall <code>waterGLKN</code>. If you’re still running into
 issues, it could be that <code>devtools</code> is missing some package
 dependencies, which the error message will often mention. Install any
 missing packages and then try installing <code>waterGLKN</code> again.
 If you’re still not successful, send me a screenshot of the error and
-I’ll help you troubleshoot.
+I’ll help you troubleshoot.</p>
 </details>
 <br>
 <h4>
 <b>Step 4.</b> Load <code>waterGLKN</code> R package
 </h4>
 <pre class="r"><code>library(waterGLKN)</code></pre>
+<br>
 <h4>
 <b>Step 5.</b> Import data
 </h4>
@@ -716,6 +726,7 @@ different columns, this approach won’t work.</p>
 <pre class="r"><code>river_zip = (&quot;../data/GLKN_water/records-2309369.zip&quot;)
 lake_zip = (&quot;../data/GLKN_water/records-2306516.zip&quot;)
 importData(type = &#39;zip&#39;, filepath = c(river_zip, lake_zip))</code></pre>
+<br>
 <h4>
 <b>Step 6.</b> Play with the data
 </h4>
@@ -1174,7 +1185,7 @@ years (default), and only return important columns.
 </p>
 <pre class="r"><code>res &lt;- getResults()
 print_head(res)</code></pre>
-<table class=" lightable-classic" style="font-size: 12px; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<table class=" lightable-classic" style="font-size: 12px; color: black; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -5464,7 +5475,7 @@ Summarize only lake events for SACN for all years
 </p>
 <pre class="r"><code>sacn_lk &lt;- sumEvents(park = &quot;SACN&quot;, site_type = &quot;lake&quot;)
 print_head(sacn_lk)</code></pre>
-<table class=" lightable-classic" style="font-size: 12px; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<table class=" lightable-classic" style="font-size: 12px; color: black; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
