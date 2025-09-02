@@ -1,7 +1,7 @@
 #' @include getResults.R
 #' @include theme_WQ.R
 #'
-#' @importFrom dplyr filter group_by left_join mutate select summarize
+#' @importFrom dplyr filter group_by left_join mutate select summarize ungroup
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @import ggplot2
 #'
@@ -190,6 +190,8 @@ plotWaterBands <- function(park = "all",
   facet_scales <- match.arg(facet_scales, c("fixed", "free", "free_y", "free_x"))
   stopifnot(class(plotly) == "logical")
 
+  years <- c(year_current, years_historic)
+
   if(!requireNamespace("plotly", quietly = TRUE) & plotly == TRUE){
       stop("Package 'plotly' needed if plotly = TRUE. Please install it.", call. = FALSE)}
 
@@ -340,7 +342,7 @@ plotWaterBands <- function(park = "all",
 
   facetsite <- ifelse(length(unique(wdat_curr$site_fac)) > 1, TRUE, FALSE)
 
-  monthly_plot <- #suppressWarnings(
+  monthly_plot <- suppressWarnings(
     ggplot() + theme_WQ() +
     geom_ribbon(data = wdat_hist2,
                 aes(ymin = lower, ymax = upper, x = mon,
@@ -407,6 +409,7 @@ plotWaterBands <- function(park = "all",
     guides(fill = guide_legend(order = 1),
            color = guide_legend(order = 2)
     )
+  )
 
     final_plot <- if(plotly == TRUE){plotly::ggplotly(monthly_plot, tooltip = "text")} else {monthly_plot}
     return(suppressWarnings(final_plot))

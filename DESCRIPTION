@@ -27,3 +27,8 @@ Collate:
     'plotTrend.R'
     'plotWaterBands.R'
     'sumEvents.R'
+Imports: 
+    dplyr,
+    ggplot2,
+    purrr,
+    tidyr
