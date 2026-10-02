@@ -57,6 +57,8 @@ parameter = c("ANC", "NH3", "pH", "Temp_C", "SDepth_m", "Discharge_csf", "Penetr
 
 ## Using the `waterGLKN` R package {.tabset .tabset-pills}
 
+<h4 style='color:red;'>This website has been moved to <a href="https://doi-nps.github.io/waterGLKN">https://doi-nps.github.io/waterGLKN</a> and will no longer be updated on this site. The code repo for this site is <a href="https://github.com/DOI-NPS/waterGLKN">https://github.com/DOI-NPS/waterGLKN</a>.</h4>
+
 ### Getting started {.tabset}
 
 #### Installation
